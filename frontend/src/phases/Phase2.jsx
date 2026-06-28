@@ -36,6 +36,7 @@ export default function Phase2({ project, saveData }) {
   const [mode, setMode] = useState(d.load?.mode || "both");
   const [rec, setRec] = useState(d.load?.rec || null);
   const [atmo, setAtmo] = useState(d.load?.atmo || {});
+  const [groupSizes, setGroupSizes] = useState(d.load?.groupSizes || {});
 
   useEffect(() => {
     const nd = project.data || {};
@@ -51,10 +52,11 @@ export default function Phase2({ project, saveData }) {
     setMode(nd.load?.mode || "both");
     setRec(nd.load?.rec || null);
     setAtmo(nd.load?.atmo || {});
+    setGroupSizes(nd.load?.groupSizes || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, atmo, ...patch } });
+  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, atmo, groupSizes, ...patch } });
 
   const fetchPowder = async () => {
     if (!powder.powder_brand || !powder.powder_model || !powder.bullet_weight) { toast.error("Completa los datos de punta y pólvora"); return; }
@@ -98,6 +100,12 @@ export default function Phase2({ project, saveData }) {
     const nv = { ...vels, [charge]: arr };
     setVels(nv);
     persist({ vels: nv });
+  };
+
+  const setGroupSize = (charge, val) => {
+    const ng = { ...groupSizes, [charge]: val };
+    setGroupSizes(ng);
+    persist({ groupSizes: ng });
   };
 
   const recommend = async () => {
@@ -159,7 +167,7 @@ export default function Phase2({ project, saveData }) {
           <div className="overflow-auto">
             <table className="fc-table">
               <thead>
-                <tr><th>Carga (gr)</th><th>Disparo 1</th><th>Disparo 2</th><th>Disparo 3</th><th>ES (m/s)</th><th>SD (m/s)</th></tr>
+                <tr><th>Carga (gr)</th><th>Disparo 1</th><th>Disparo 2</th><th>Disparo 3</th><th>ES (m/s)</th><th>SD (m/s)</th><th>Grupo c-c (mm)</th></tr>
               </thead>
               <tbody>
                 {charges.map((c) => {
@@ -172,6 +180,7 @@ export default function Phase2({ project, saveData }) {
                       ))}
                       <td className="fc-result">{st.es ?? "—"}</td>
                       <td className="fc-result">{st.sd ?? "—"}</td>
+                      <td><input className="fc-input" style={{ minWidth: 90 }} data-testid={`group-cc-${c}`} value={groupSizes[c] ?? ""} onChange={(e) => setGroupSize(c, e.target.value)} placeholder="mm c-c" /></td>
                     </tr>
                   );
                 })}
