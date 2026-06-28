@@ -58,3 +58,24 @@ export function deleteProject(id) {
   write(read().filter((p) => p.id !== id));
   return { deleted: true };
 }
+
+export function exportProjects() {
+  return read();
+}
+
+// Merge imported projects by id (imported overrides same id, others are added).
+export function importProjects(incoming) {
+  if (!Array.isArray(incoming)) throw new Error("Formato inválido");
+  const arr = read();
+  const byId = {};
+  arr.forEach((p) => { byId[p.id] = p; });
+  let added = 0, updated = 0;
+  incoming.forEach((p) => {
+    if (!p || !p.id || !p.caliber) return;
+    if (byId[p.id]) updated += 1; else added += 1;
+    byId[p.id] = p;
+  });
+  const merged = Object.values(byId);
+  write(merged);
+  return { added, updated, total: merged.length };
+}

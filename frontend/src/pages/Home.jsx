@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Crosshair } from "lucide-react";
+import { Crosshair, Download, Upload } from "lucide-react";
 import { api } from "../lib/api";
 import ProjectBar from "../components/ProjectBar";
 import PhaseNav from "../components/PhaseNav";
@@ -16,6 +16,40 @@ export default function Home() {
   const [phase, setPhase] = useState(1);
   const saveTimer = useRef(null);
   const pendingPatch = useRef({});
+  const importInput = useRef(null);
+
+  const exportProjects = () => {
+    const data = api.exportProjects();
+    if (!data.length) { toast.error("No hay proyectos para exportar"); return; }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `f-class-proyectos-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`${data.length} proyecto(s) exportado(s)`);
+  };
+
+  const importProjects = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const res = api.importProjects(parsed);
+        await loadProjects();
+        toast.success(`Importado: ${res.added} nuevo(s), ${res.updated} actualizado(s)`);
+      } catch (err) {
+        toast.error("Archivo JSON inválido");
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const loadProjects = useCallback(async () => {
     const list = await api.listProjects();
@@ -103,6 +137,15 @@ export default function Home() {
             <p className="text-xs uppercase tracking-[0.25em] mt-1" style={{ color: "#94A3B8" }}>
               Desarrollo de cargas de precisión
             </p>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="export-projects-btn" onClick={exportProjects} title="Exportar proyectos a JSON">
+              <Download size={16} /> <span className="hidden sm:inline">Exportar</span>
+            </button>
+            <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="import-projects-btn" onClick={() => importInput.current?.click()} title="Importar proyectos desde JSON">
+              <Upload size={16} /> <span className="hidden sm:inline">Importar</span>
+            </button>
+            <input ref={importInput} type="file" accept="application/json,.json" className="hidden" data-testid="import-file-input" onChange={importProjects} />
           </div>
         </div>
       </header>

@@ -16,6 +16,8 @@ export const api = {
   createProject: (b) => ok(store.createProject(b)),
   updateProject: (id, b) => ok(store.updateProject(id, b)),
   deleteProject: (id) => ok(store.deleteProject(id)),
+  exportProjects: () => store.exportProjects(),
+  importProjects: (arr) => store.importProjects(arr),
 
   bushing: (b) => ok(calc.bushing(b)),
   headspace: (b) => ok(calc.headspace(b)),
