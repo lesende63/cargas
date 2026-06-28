@@ -1,0 +1,119 @@
+{
+  "project_name": "F-Class Precision Reloading App",
+  "theme": "Dark",
+  "archetype": "Archetype 5 (Luxury) + Archetype 2 (Performance Pro) Fusion",
+  "design_concept": "High-End Tactical Precision. A luxury ballistics data interface leveraging deep navy blue and metallic gold to project authority, precision, and elite tier competition shooting.",
+  "colors": {
+    "background": {
+      "base": "#0A1526",
+      "surface": "#112240",
+      "surface_elevated": "#1A2E50",
+      "input": "#FFFFFF"
+    },
+    "text": {
+      "primary": "#E2E8F0",
+      "secondary": "#94A3B8",
+      "title": "#D4AF37",
+      "subtitle": "#C5A059",
+      "input": "#0A1526"
+    },
+    "border": {
+      "default": "#1A2E50",
+      "accent": "#D4AF37",
+      "subtle": "rgba(212, 175, 55, 0.2)"
+    },
+    "status": {
+      "success": "#4ADE80",
+      "error": "#F87171",
+      "warning": "#FBBF24",
+      "info": "#38BDF8"
+    },
+    "brand": {
+      "gold_primary": "#D4AF37",
+      "gold_hover": "#E5C158",
+      "navy_primary": "#0A1526"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Chivo', sans-serif",
+      "body": "'IBM Plex Sans', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "rules": {
+      "h1": "text-3xl sm:text-4xl font-black tracking-tighter text-[#D4AF37] uppercase",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight text-[#C5A059]",
+      "h3": "text-xl sm:text-2xl font-semibold tracking-tight text-[#C5A059]",
+      "body": "text-base leading-relaxed text-[#E2E8F0]",
+      "data": "font-mono text-sm tracking-widest text-[#E2E8F0]",
+      "input_text": "text-sm md:text-base text-[#0A1526] font-medium"
+    }
+  },
+  "spacing_and_layout": {
+    "grid_system": "MODE B: THE CONTROL ROOM GRID. Tight gaps (gap-4 or gap-6) for high data density. Every pixel utilized.",
+    "container_padding": "p-6 md:p-8",
+    "border_radius": "rounded-sm (2px) to maintain a sharp, tactical instrument feel. No pill-shaped buttons.",
+    "alignment": "Strict left-alignment for data and forms. Right-alignment for numerical table cells (decimals)."
+  },
+  "components": {
+    "inputs": {
+      "style": "bg-white text-[#0A1526] text-[14px] md:text-[16px] rounded-sm border-2 border-transparent focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] shadow-inner px-3 py-2",
+      "labels": "text-xs uppercase tracking-[0.15em] font-semibold text-[#D4AF37] mb-1 block"
+    },
+    "buttons": {
+      "primary": "bg-[#D4AF37] hover:bg-[#E5C158] text-[#0A1526] font-bold uppercase tracking-wider text-sm px-6 py-3 rounded-sm transition-colors duration-200 shadow-[0_0_15px_rgba(212,175,55,0.2)]",
+      "secondary": "bg-transparent border border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 font-bold uppercase tracking-wider text-sm px-6 py-3 rounded-sm transition-colors duration-200"
+    },
+    "cards": {
+      "style": "bg-[#112240] border border-[#D4AF37]/20 rounded-sm p-6 shadow-lg",
+      "header": "border-b border-[#D4AF37]/20 pb-4 mb-4"
+    },
+    "tables": {
+      "container": "w-full border-collapse border border-[#1A2E50]",
+      "header": "bg-[#1A2E50] text-[#D4AF37] text-xs uppercase tracking-wider font-semibold text-left p-3",
+      "cell": "border-t border-[#1A2E50] p-3 font-mono text-sm",
+      "row_hover": "hover:bg-[#1A2E50]/50 transition-colors"
+    },
+    "wizard_navigation": {
+      "container": "flex items-center justify-between w-full mb-8 relative",
+      "line": "absolute top-1/2 left-0 w-full h-[2px] bg-[#1A2E50] -z-10",
+      "line_active": "absolute top-1/2 left-0 h-[2px] bg-[#D4AF37] -z-10 transition-all duration-500",
+      "step": "flex items-center justify-center w-10 h-10 rounded-full border-2 bg-[#0A1526]",
+      "step_active": "border-[#D4AF37] text-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.5)]",
+      "step_inactive": "border-[#1A2E50] text-[#94A3B8]"
+    },
+    "ocw_chart": {
+      "type": "Interactive Recharts Scatter Plot or SVG Canvas",
+      "description": "Horizontal axis mapping powder charge increments (0.03 grain). Clickable plot area to register vertical/horizontal bullet impact shifts. Background grid should resemble a highly precise MOA/MIL reticle.",
+      "styles": "Grid lines in #1A2E50, Impact markers in #D4AF37 with glow effect."
+    }
+  },
+  "interactions_and_motion": {
+    "hover_states": "Buttons and active rows must have clear, high-contrast hover states. Use slight brightness increases for gold.",
+    "transitions": "Fast, crisp transitions (150ms-200ms) to emphasize technical responsiveness.",
+    "focus_states": "All form inputs must highlight with a solid #D4AF37 border on focus."
+  },
+  "icons": {
+    "library": "Phosphor Icons (@phosphor-icons/react)",
+    "style": "Duotone or sharp Line weights. Icons should be tinted Gold (#D4AF37) or Secondary Slate (#94A3B8)."
+  },
+  "testing": {
+    "attributes": "All interactive elements (buttons, inputs, wizard steps, chart markers) MUST include a data-testid attribute formatted as kebab-case, role-based. e.g., data-testid='calculate-headspace-button'"
+  },
+  "media": {
+    "images": [
+      {
+        "category": "header_background_texture",
+        "url": "https://images.unsplash.com/photo-1629197521865-4946b4acd2b0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwxfHxkYXJrJTIwYmx1ZSUyMG1ldGFsbGljJTIwdGV4dHVyZXxlbnwwfHx8fDE3ODI2NjY0NjB8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark blue metallic texture to be used with a heavy overlay (e.g., bg-[#0A1526]/90) behind the top wizard navigation or hero header to add subtle luxury depth."
+      }
+    ]
+  },
+  "implementation_instructions": {
+    "step_1": "Initialize a dark theme layout locking the body background to #0A1526.",
+    "step_2": "Implement the 4-phase wizard component as the primary navigation anchor.",
+    "step_3": "Build the Phase 1 Case Preparation forms with strict white backgrounds and black text for inputs.",
+    "step_4": "Develop the OCW clickable chart in Phase 2 using Recharts (Customized ScatterChart) allowing user click to add data points.",
+    "step_5": "Ensure all calculation outputs (SD, ES, Recommendations) use JetBrains Mono and highlight optimal results in Green (#4ADE80)."
+  }
+}
