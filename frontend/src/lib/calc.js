@@ -120,16 +120,17 @@ export function recommend({ mode = "both", entries }) {
   const ocwWindow = () => {
     const pts = entries.filter((e) => e.ocw_x != null && e.ocw_y != null).map((e) => [e.charge, e.ocw_x, e.ocw_y]);
     if (pts.length < 3) return [[], null];
-    const dist = (a, b) => Math.sqrt((a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
     let best = null;
     for (let i = 0; i < pts.length - 2; i++) {
       const w = pts.slice(i, i + 3);
-      // spread = max distance between any two group centroids in the window
-      let maxd = 0;
-      for (let a = 0; a < w.length; a++) for (let b = a + 1; b < w.length; b++) maxd = Math.max(maxd, dist(w[a], w[b]));
-      if (best == null || maxd < best.rng) best = { rng: maxd, w };
+      const xs = w.map((p) => p[1]);
+      const ys = w.map((p) => p[2]);
+      const h = Math.max(...xs) - Math.min(...xs); // dispersión horizontal
+      const v = Math.max(...ys) - Math.min(...ys); // dispersión vertical
+      const total = h + v;
+      if (best == null || total < best.total) best = { total, h: r2(h), v: r2(v), w };
     }
-    return [best.w.map((x) => x[0]), r2(best.rng)];
+    return [best.w.map((x) => x[0]), { h: best.h, v: best.v }];
   };
 
   let recommended = [];
@@ -137,16 +138,17 @@ export function recommend({ mode = "both", entries }) {
     recommended = velocityBest();
     explanation.push("Cargas con menor ES + SD combinados.");
   } else if (mode === "ocw") {
-    const [win, rng] = ocwWindow();
+    const [win, m] = ocwWindow();
     recommended = win;
-    explanation.push(`Nodo OCW: cargas con menor desplazamiento del centro de impacto (${rng} mm).`);
+    if (m) explanation.push(`Nodo OCW: menor dispersión horizontal ${m.h} mm y vertical ${m.v} mm.`);
+    else explanation.push("Marca al menos 3 cargas con impactos para localizar el nodo OCW.");
   } else {
-    const [win, rng] = ocwWindow();
+    const [win, m] = ocwWindow();
     const vel = velocityBest();
     if (win.length) {
       const inter = vel.length ? win.filter((c) => vel.includes(c)) : win;
       recommended = inter.length ? inter : win;
-      explanation.push(`Nodo OCW (desplazamiento ${rng} mm)` + (inter.length ? " cruzado con mejor ES/SD." : "."));
+      explanation.push(`Nodo OCW (dispersión H ${m.h} mm / V ${m.v} mm)` + (inter.length ? " cruzado con mejor ES/SD." : "."));
     } else {
       recommended = vel;
       explanation.push("Sin datos OCW suficientes; se usó ES + SD.");
