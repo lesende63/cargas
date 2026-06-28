@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Crosshair, Download, Upload } from "lucide-react";
+import { Crosshair, Download, Upload, Power } from "lucide-react";
 import { api } from "../lib/api";
 import ProjectBar from "../components/ProjectBar";
 import PhaseNav from "../components/PhaseNav";
@@ -33,8 +33,13 @@ export default function Home() {
     toast.success(`${data.length} proyecto(s) exportado(s)`);
   };
 
-  const importProjects = (e) => {
-    const file = e.target.files?.[0];
+  const closeApp = () => {
+    window.open("", "_self");
+    window.close();
+    setTimeout(() => toast.message("Si la ventana no se cierra sola, ciérrala manualmente."), 400);
+  };
+
+  const importProjects = (e) => {    const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
     const reader = new FileReader();
@@ -129,6 +134,9 @@ export default function Home() {
     <div className="min-h-screen" style={{ backgroundColor: "#0A1526" }}>
       <header className="border-b" style={{ borderColor: "rgba(212,175,55,0.2)" }}>
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center gap-3">
+          <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="close-app-btn" onClick={closeApp} title="Cerrar aplicación">
+            <Power size={16} /> <span className="hidden sm:inline">Cerrar</span>
+          </button>
           <Crosshair size={30} color="#D4AF37" />
           <div>
             <h1 className="fc-title text-2xl sm:text-3xl font-black uppercase leading-none" data-testid="app-title">
