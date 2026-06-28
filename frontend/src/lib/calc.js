@@ -118,19 +118,36 @@ export function recommend({ mode = "both", entries }) {
     return scored.filter(([, s]) => s <= best + 0.01).map(([c]) => c);
   };
   const ocwWindow = () => {
-    const pts = entries.filter((e) => e.ocw_x != null && e.ocw_y != null).map((e) => [e.charge, e.ocw_x, e.ocw_y]);
-    if (pts.length < 3) return [[], null];
+    const rows = entries.map((e) => ({
+      charge: e.charge,
+      x: e.ocw_x, y: e.ocw_y, g: e.ocw_group,
+      has: (e.ocw_x != null && e.ocw_y != null) || e.ocw_group != null,
+    }));
     let best = null;
-    for (let i = 0; i < pts.length - 2; i++) {
-      const w = pts.slice(i, i + 3);
-      const xs = w.map((p) => p[1]);
-      const ys = w.map((p) => p[2]);
-      const h = Math.max(...xs) - Math.min(...xs); // dispersión horizontal
-      const v = Math.max(...ys) - Math.min(...ys); // dispersión vertical
-      const total = h + v;
-      if (best == null || total < best.total) best = { total, h: r2(h), v: r2(v), w };
+    for (let i = 0; i < rows.length - 2; i++) {
+      const w = rows.slice(i, i + 3);
+      if (!w.every((r) => r.has)) continue;
+      const xs = w.filter((r) => r.x != null).map((r) => r.x);
+      const ys = w.filter((r) => r.y != null).map((r) => r.y);
+      const gs = w.filter((r) => r.g != null).map((r) => r.g);
+      const h = xs.length ? Math.max(...xs) - Math.min(...xs) : null;
+      const v = ys.length ? Math.max(...ys) - Math.min(...ys) : null;
+      const avgG = gs.length ? gs.reduce((a, b) => a + b, 0) / gs.length : null;
+      const score = (h || 0) + (v || 0) + (avgG || 0);
+      if (best == null || score < best.score) {
+        best = { score, h: h != null ? r2(h) : null, v: v != null ? r2(v) : null, g: avgG != null ? r2(avgG) : null, w };
+      }
     }
-    return [best.w.map((x) => x[0]), { h: best.h, v: best.v }];
+    if (best == null) return [[], null];
+    return [best.w.map((r) => r.charge), { h: best.h, v: best.v, g: best.g }];
+  };
+
+  const ocwDesc = (m) => {
+    const parts = [];
+    if (m.h != null) parts.push(`H ${m.h} mm`);
+    if (m.v != null) parts.push(`V ${m.v} mm`);
+    if (m.g != null) parts.push(`grupo ${m.g} mm c-c`);
+    return parts.join(" / ");
   };
 
   let recommended = [];
@@ -140,15 +157,15 @@ export function recommend({ mode = "both", entries }) {
   } else if (mode === "ocw") {
     const [win, m] = ocwWindow();
     recommended = win;
-    if (m) explanation.push(`Nodo OCW: menor dispersión horizontal ${m.h} mm y vertical ${m.v} mm.`);
-    else explanation.push("Marca al menos 3 cargas con impactos para localizar el nodo OCW.");
+    if (m) explanation.push(`Nodo OCW: menor dispersión (${ocwDesc(m)}).`);
+    else explanation.push("Marca impactos o anota el tamaño de grupo c-c en al menos 3 cargas consecutivas.");
   } else {
     const [win, m] = ocwWindow();
     const vel = velocityBest();
     if (win.length) {
       const inter = vel.length ? win.filter((c) => vel.includes(c)) : win;
       recommended = inter.length ? inter : win;
-      explanation.push(`Nodo OCW (dispersión H ${m.h} mm / V ${m.v} mm)` + (inter.length ? " cruzado con mejor ES/SD." : "."));
+      explanation.push(`Nodo OCW (${ocwDesc(m)})` + (inter.length ? " cruzado con mejor ES/SD." : "."));
     } else {
       recommended = vel;
       explanation.push("Sin datos OCW suficientes; se usó ES + SD.");

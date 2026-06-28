@@ -114,7 +114,8 @@ export default function Phase2({ project, saveData }) {
     const entries = charges.map((c) => {
       const st = stats(vels[c] || []);
       const ce = ocwEnabled ? centroid(norm(ocw[c])) : null;
-      return { charge: c, es: st.es, sd: st.sd, ocw_x: ce ? ce.x : null, ocw_y: ce ? ce.y : null };
+      const g = ocwEnabled ? num(groupSizes[c]) : null;
+      return { charge: c, es: st.es, sd: st.sd, ocw_x: ce ? ce.x : null, ocw_y: ce ? ce.y : null, ocw_group: g };
     });
     const res = await api.recommend({ mode, entries });
     setRec(res);
