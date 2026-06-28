@@ -1,0 +1,16 @@
+// Caliber presets (bullet diameter + headspace datum diameter, inches)
+export const CALIBER_PRESETS = {
+  ".223 Remington": { bullet_diameter: 0.224, headspace_datum: 0.330 },
+  "6mm BR Norma": { bullet_diameter: 0.243, headspace_datum: 0.400 },
+  "6mm Dasher": { bullet_diameter: 0.243, headspace_datum: 0.400 },
+  "6mm Creedmoor": { bullet_diameter: 0.243, headspace_datum: 0.400 },
+  "6.5x47 Lapua": { bullet_diameter: 0.264, headspace_datum: 0.400 },
+  "6.5 Creedmoor": { bullet_diameter: 0.264, headspace_datum: 0.400 },
+  "6.5 PRC": { bullet_diameter: 0.264, headspace_datum: 0.400 },
+  ".284 Winchester": { bullet_diameter: 0.284, headspace_datum: 0.420 },
+  "7mm WSM": { bullet_diameter: 0.284, headspace_datum: 0.420 },
+  ".308 Winchester": { bullet_diameter: 0.308, headspace_datum: 0.400 },
+  ".30-06 Springfield": { bullet_diameter: 0.308, headspace_datum: 0.375 },
+  ".300 WSM": { bullet_diameter: 0.308, headspace_datum: 0.420 },
+  ".300 Winchester Magnum": { bullet_diameter: 0.308, headspace_datum: 0.420 },
+};

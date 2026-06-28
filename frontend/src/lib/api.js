@@ -1,24 +1,42 @@
-import axios from "axios";
+// Local-first API. Calculations + persistence run offline in the browser.
+// Only powder-data (AI) requires the network; UI offers a manual fallback.
+import { CALIBER_PRESETS } from "./presets";
+import * as calc from "./calc";
+import * as store from "./store";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
 
-const http = axios.create({ baseURL: API });
+const ok = (v) => Promise.resolve(v);
 
 export const api = {
-  presets: () => http.get("/caliber-presets").then((r) => r.data),
-  listProjects: () => http.get("/projects").then((r) => r.data),
-  getProject: (id) => http.get(`/projects/${id}`).then((r) => r.data),
-  createProject: (body) => http.post("/projects", body).then((r) => r.data),
-  updateProject: (id, body) => http.put(`/projects/${id}`, body).then((r) => r.data),
-  deleteProject: (id) => http.delete(`/projects/${id}`).then((r) => r.data),
-  bushing: (body) => http.post("/calc/bushing", body).then((r) => r.data),
-  headspace: (body) => http.post("/calc/headspace", body).then((r) => r.data),
-  volumeGroups: (body) => http.post("/calc/volume-groups", body).then((r) => r.data),
-  groupStats: (body) => http.post("/calc/group-stats", body).then((r) => r.data),
-  chargeLadder: (body) => http.post("/calc/charge-ladder", body).then((r) => r.data),
-  seatingLadder: (body) => http.post("/calc/seating-ladder", body).then((r) => r.data),
-  primerLadder: (body) => http.post("/calc/primer-ladder", body).then((r) => r.data),
-  recommend: (body) => http.post("/calc/recommend-charge", body).then((r) => r.data),
-  powderData: (body) => http.post("/powder-data", body).then((r) => r.data),
+  presets: () => ok({ presets: CALIBER_PRESETS }),
+  listProjects: () => ok(store.listProjects()),
+  getProject: (id) => ok(store.getProject(id)),
+  createProject: (b) => ok(store.createProject(b)),
+  updateProject: (id, b) => ok(store.updateProject(id, b)),
+  deleteProject: (id) => ok(store.deleteProject(id)),
+
+  bushing: (b) => ok(calc.bushing(b)),
+  headspace: (b) => ok(calc.headspace(b)),
+  volumeGroups: (b) => ok(calc.volumeGroups(b)),
+  groupStats: (b) => ok(calc.groupStats(b.velocities)),
+  chargeLadder: (b) => ok(calc.chargeLadder(b)),
+  seatingLadder: (b) => ok(calc.seatingLadder(b)),
+  primerLadder: (b) => ok(calc.primerLadder(b)),
+  recommend: (b) => ok(calc.recommend(b)),
+
+  // Requires internet (AI). Throws when offline so the UI can prompt manual entry.
+  powderData: async (b) => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      throw new Error("offline");
+    }
+    const resp = await fetch(`${API}/powder-data`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(b),
+    });
+    if (!resp.ok) throw new Error("powder-data failed");
+    return resp.json();
+  },
 };

@@ -1,0 +1,30 @@
+{
+  "summary": "Frontend-only E2E testing of the F-Class offline reload app. Verified project creation, Phase 1 (bushing/headspace/volume), Phase 2 (manual powder min/max + ladder + ES/SD), Phase 3 (VLD seating ladder + recommend), and Phase 4 (primer ladder + ES/SD + recommend). Found and FIXED the previously-reported regression: after reload + reselecting a project, Phase 1 inputs (and other phases) were empty because the debounced saveData in Home.jsx only persisted the LAST patch when calls happened <700ms apart, discarding all earlier section patches. Applied a patch-accumulation fix and re-ran the full flow — all 4 phases now persist correctly across page reloads.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ProjectBar select", "issues": ["React hydration warning: <span> rendered inside <option> via x-source instrumentation wrappers. Cosmetic in dev (does not break UX); originates from build-time instrumentation, not the app source."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Review and keep the persistence fix in /app/frontend/src/pages/Home.jsx (debounced patches now accumulate in pendingPatch ref instead of overwriting).",
+    "Optional: consider firing the debounced save on visibilitychange/beforeunload to avoid losing the last <700ms of edits when the tab is closed quickly."
+  ],
+  "critical_code_review_comments": [
+    "Home.jsx: debounce in saveData was clobbering previous patches by sending only the last `patch` (not the merged buffer). Any rapid edit stream that touched multiple top-level data keys (bushing, headspace, volume, load, seating, primer) within 700ms windows would silently drop earlier sections. Fixed by accumulating patches in a useRef buffer that is flushed and reset when the timer fires.",
+    "Home.jsx saveData has no flush-on-unmount/unload; very fast edits followed by closing the tab can still lose up to 700ms of data.",
+    "Phase1/2/3/4 useEffect re-syncs on project.id only; if the same project gets externally updated, the form won't refresh — acceptable for a single-user offline app.",
+    "ProjectBar option rendering triggers a React hydration warning due to instrumentation spans inside <option>; non-blocking."
+  ],
+  "updated_files": ["/app/frontend/src/pages/Home.jsx"],
+  "success_rate": { "backend": "n/a (not requested)", "frontend": "100% after fix" },
+  "test_credentials": "n/a — no auth, fully offline localStorage app.",
+  "seed_data_creation": "Test created a .308 Winchester / Lapua / OFF1 project in localStorage during the run; left in place to aid the next iteration.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "App is fully client-side (calc.js + store.js, key 'fclass_projects'). Only network call is POST /api/powder-data for the AI button. The persistence regression was caused by the debounce in Home.jsx.saveData replacing patches; now fixed via an accumulating pendingPatch ref. To reproduce the original bug: revert Home.jsx, fill bushing → headspace → volume in <700ms gaps, reload, reselect project; bushing fields will be empty.",
+  "rca of the issue": "Root cause: setTimeout-based debounce in Home.jsx#saveData captured the latest `patch` argument and clear/re-set the timer on every call. With rapid keystrokes across different top-level data keys, the timer was reset before any earlier patch could flush, so only the final patch reached store.updateProject. store.js merged that single patch into localStorage, leaving earlier sections absent. Fix: maintain pendingPatch = useRef({}); on every saveData call, do pendingPatch.current = { ...pendingPatch.current, ...patch }; on timer fire, send pendingPatch.current and reset to {}. Verified via localStorage inspection (612→2854 chars) and full reload test across all 4 phases."
+}

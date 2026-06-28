@@ -15,6 +15,7 @@ export default function Home() {
   const [presets, setPresets] = useState({});
   const [phase, setPhase] = useState(1);
   const saveTimer = useRef(null);
+  const pendingPatch = useRef({});
 
   const loadProjects = useCallback(async () => {
     const list = await api.listProjects();
@@ -49,14 +50,17 @@ export default function Home() {
     toast.success("Proyecto eliminado");
   };
 
-  // Merge a patch into project.data and persist (debounced)
+  // Merge a patch into project.data and persist (debounced, accumulates patches)
   const saveData = useCallback((patch) => {
     setProject((prev) => {
       if (!prev) return prev;
       const next = { ...prev, data: { ...prev.data, ...patch } };
+      pendingPatch.current = { ...pendingPatch.current, ...patch };
       if (saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(() => {
-        api.updateProject(next.id, { data: patch }).catch(() => toast.error("Error al guardar"));
+        const toSend = pendingPatch.current;
+        pendingPatch.current = {};
+        api.updateProject(next.id, { data: toSend }).catch(() => toast.error("Error al guardar"));
       }, 700);
       return next;
     });

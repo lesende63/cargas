@@ -51,8 +51,10 @@ export default function Phase1({ project, saveData, presets }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const calcBushing = async () => {
-    const body = {
+  const upBush = (field, v) => { const nb = { ...bush, [field]: v }; setBush(nb); saveData({ bushing: { ...nb, result: bushRes } }); };
+  const upHs = (field, v) => { const nh = { ...hs, [field]: v }; setHs(nh); saveData({ headspace: { ...nh, result: hsRes } }); };
+
+  const calcBushing = async () => {    const body = {
       neck_fired: num(bush.neck_fired),
       neck_wall_thickness: num(bush.neck_wall_thickness),
       bullet_diameter: num(bush.bullet_diameter),
@@ -108,10 +110,10 @@ export default function Phase1({ project, saveData, presets }) {
       {/* 1. BUSHING */}
       <Section title="1 · Bushing y Expander" subtitle="Determina el bushing y el expander según la tensión de cuello deseada." testId="bushing-section">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-          <Field label='Cuello vaina disparada (")' testId="bush-neck-fired" value={bush.neck_fired} onChange={(v) => setBush({ ...bush, neck_fired: v })} placeholder="0.343" />
-          <Field label='Grosor pared cuello (")' testId="bush-wall" value={bush.neck_wall_thickness} onChange={(v) => setBush({ ...bush, neck_wall_thickness: v })} placeholder="0.015" />
-          <Field label='Ø Bala (")' testId="bush-bullet" value={bush.bullet_diameter} onChange={(v) => setBush({ ...bush, bullet_diameter: v })} placeholder="0.308" />
-          <Field label='Tensión deseada (")' testId="bush-tension" value={bush.neck_tension} onChange={(v) => setBush({ ...bush, neck_tension: v })} placeholder="0.002" />
+          <Field label='Cuello vaina disparada (")' testId="bush-neck-fired" value={bush.neck_fired} onChange={(v) => upBush("neck_fired", v)} placeholder="0.343" />
+          <Field label='Grosor pared cuello (")' testId="bush-wall" value={bush.neck_wall_thickness} onChange={(v) => upBush("neck_wall_thickness", v)} placeholder="0.015" />
+          <Field label='Ø Bala (")' testId="bush-bullet" value={bush.bullet_diameter} onChange={(v) => upBush("bullet_diameter", v)} placeholder="0.308" />
+          <Field label='Tensión deseada (")' testId="bush-tension" value={bush.neck_tension} onChange={(v) => upBush("neck_tension", v)} placeholder="0.002" />
         </div>
         <button className="fc-btn flex items-center gap-2" data-testid="calc-bushing-btn" onClick={calcBushing}><Calculator size={16} /> Calcular bushing</button>
         {bushRes && (
@@ -133,8 +135,8 @@ export default function Phase1({ project, saveData, presets }) {
       {/* 2. HEADSPACE */}
       <Section title="2 · Headspace" subtitle="Medida óptima de casquillo para rifles de cerrojo (vaina disparada − 0.002&quot;)." testId="headspace-section">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-          <Field label='Datum del casquillo (")' testId="hs-datum" value={hs.datum} onChange={(v) => setHs({ ...hs, datum: v })} placeholder="0.400" />
-          <Field label='Medida vaina disparada (")' testId="hs-fired" value={hs.fired_measurement} onChange={(v) => setHs({ ...hs, fired_measurement: v })} placeholder="1.630" />
+          <Field label='Datum del casquillo (")' testId="hs-datum" value={hs.datum} onChange={(v) => upHs("datum", v)} placeholder="0.400" />
+          <Field label='Medida vaina disparada (")' testId="hs-fired" value={hs.fired_measurement} onChange={(v) => upHs("fired_measurement", v)} placeholder="1.630" />
           <div className="flex items-end">
             <button className="fc-btn w-full flex items-center justify-center gap-2" data-testid="calc-headspace-btn" onClick={calcHeadspace}><Ruler size={16} /> Calcular</button>
           </div>

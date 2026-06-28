@@ -64,10 +64,18 @@ export default function Phase2({ project, saveData }) {
       persist({ powderRes: res, end: end || String(res.max_plus_10) });
       toast.success("Datos de pólvora generados");
     } catch (e) {
-      toast.error(e?.response?.data?.detail || "Error al generar datos");
+      toast.error("Sin conexión: introduce la carga mínima y máxima manualmente.");
     } finally {
       setLoadingPowder(false);
     }
+  };
+
+  const setPowderField = (field, val) => {
+    const next = { ...(powderRes || { min_grains: "", max_grains: "", notes: "" }), [field]: val };
+    const mx = num(next.max_grains);
+    next.max_plus_10 = mx != null ? Math.round(mx * 1.1 * 100) / 100 : null;
+    setPowderRes(next);
+    persist({ powderRes: next });
   };
 
   const genLadder = async () => {
@@ -117,16 +125,21 @@ export default function Phase2({ project, saveData }) {
           <Field label="Modelo pólvora" testId="powder-model" value={powder.powder_model} onChange={(v) => setPowder({ ...powder, powder_model: v })} placeholder="H4350" />
         </div>
         <button className="fc-btn flex items-center gap-2" data-testid="fetch-powder-btn" onClick={fetchPowder} disabled={loadingPowder}>
-          <Flame size={16} /> {loadingPowder ? "Generando..." : "Generar datos de carga"}
+          <Flame size={16} /> {loadingPowder ? "Generando..." : "Generar datos con IA (online)"}
         </button>
-        {powderRes && (
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4" data-testid="powder-result">
-            <div className="p-4 rounded-sm" style={{ background: "#1A2E50" }}><p className="fc-label">Mínima</p><p className="fc-result text-xl">{gr(powderRes.min_grains)}</p></div>
-            <div className="p-4 rounded-sm" style={{ background: "#1A2E50" }}><p className="fc-label">Máxima fabricante</p><p className="fc-result text-xl">{gr(powderRes.max_grains)}</p></div>
-            <div className="p-4 rounded-sm" style={{ background: "#1A2E50" }}><p className="fc-label">Máxima +10%</p><p className="text-xl" style={{ color: "#F87171", fontFamily: "monospace", fontWeight: 700 }}>{gr(powderRes.max_plus_10)}</p></div>
-            {powderRes.notes && <p className="sm:col-span-3 text-xs" style={{ color: "#FBBF24" }}>⚠ {powderRes.notes}</p>}
+
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end" data-testid="powder-result">
+          <Field label="Carga mínima (gr)" testId="powder-min" value={powderRes?.min_grains ?? ""} onChange={(v) => setPowderField("min_grains", v)} placeholder="42.0" />
+          <Field label="Carga máxima (gr)" testId="powder-max" value={powderRes?.max_grains ?? ""} onChange={(v) => setPowderField("max_grains", v)} placeholder="44.0" />
+          <div className="p-3 rounded-sm" style={{ background: "#1A2E50" }}>
+            <p className="fc-label">Máxima +10%</p>
+            <p className="text-lg" style={{ color: "#F87171", fontFamily: "monospace", fontWeight: 700 }}>{powderRes?.max_plus_10 != null ? gr(powderRes.max_plus_10) : "—"}</p>
           </div>
-        )}
+          <p className="text-xs sm:col-span-1" style={{ color: "#94A3B8" }}>
+            Puedes generarlas con IA (requiere internet) o introducirlas a mano desde tu manual para trabajar offline.
+          </p>
+        </div>
+        {powderRes?.notes && <p className="mt-2 text-xs" style={{ color: "#FBBF24" }}>⚠ {powderRes.notes}</p>}
       </Section>
 
       <Section title="Escalera de carga" subtitle="Tramos de 0.3 gr. Tres disparos por carga; la app calcula ES y SD del grupo." testId="ladder-section">
