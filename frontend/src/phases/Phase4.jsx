@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Gauge, ListOrdered } from "lucide-react";
 import { api } from "../lib/api";
 import { inch, num } from "../lib/format";
-import { Section, Field } from "../components/Bits";
+import { Section, Field, AtmoData } from "../components/Bits";
 
 const stats = (vels) => {
   const v = vels.map(num).filter((x) => x != null);
@@ -22,6 +22,7 @@ export default function Phase4({ project, saveData }) {
   const [groupCount, setGroupCount] = useState(d.primer?.groupCount || 6);
   const [entries, setEntries] = useState(d.primer?.entries || []);
   const [vels, setVels] = useState(d.primer?.vels || {}); // group -> [5 velocities]
+  const [atmo, setAtmo] = useState(d.primer?.atmo || {});
 
   useEffect(() => {
     const nd = project.data || {};
@@ -30,10 +31,11 @@ export default function Phase4({ project, saveData }) {
     setGroupCount(nd.primer?.groupCount || 6);
     setEntries(nd.primer?.entries || []);
     setVels(nd.primer?.vels || {});
+    setAtmo(nd.primer?.atmo || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const persist = (patch) => saveData({ primer: { pocket, height, groupCount, entries, vels, ...patch } });
+  const persist = (patch) => saveData({ primer: { pocket, height, groupCount, entries, vels, atmo, ...patch } });
 
   const gen = async () => {
     const p = num(pocket), h = num(height);
@@ -64,6 +66,7 @@ export default function Phase4({ project, saveData }) {
   return (
     <div>
       <Section title="Escalera de seating del pistón" subtitle="Grupos de 5 cartuchos. Pretensión en pasos de 0.002&quot; (el primero a cero). La app calcula ES y SD." testId="primer-section">
+        <AtmoData value={atmo} onChange={(a) => { setAtmo(a); persist({ atmo: a }); }} testId="primer-atmo" />
         <div className="flex flex-wrap items-end gap-4 mb-5">
           <Field label='Medida bolsillo del pistón (")' testId="pocket-depth" value={pocket} onChange={setPocket} placeholder="0.129" />
           <Field label='Medida del pistón (")' testId="primer-height" value={height} onChange={setHeight} placeholder="0.124" />

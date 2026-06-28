@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Crosshair, ListOrdered } from "lucide-react";
 import { api } from "../lib/api";
 import { inch, num } from "../lib/format";
-import { Section, Field } from "../components/Bits";
+import { Section, Field, AtmoData } from "../components/Bits";
 
 export default function Phase3({ project, saveData }) {
   const d = project.data || {};
@@ -11,6 +11,7 @@ export default function Phase3({ project, saveData }) {
   const [maxCbto, setMaxCbto] = useState(d.seating?.maxCbto ?? "");
   const [entries, setEntries] = useState(d.seating?.entries || []);
   const [groups, setGroups] = useState(d.seating?.groups || {}); // cbto -> group size (mm)
+  const [atmo, setAtmo] = useState(d.seating?.atmo || {});
 
   useEffect(() => {
     const nd = project.data || {};
@@ -18,10 +19,11 @@ export default function Phase3({ project, saveData }) {
     setMaxCbto(nd.seating?.maxCbto ?? "");
     setEntries(nd.seating?.entries || []);
     setGroups(nd.seating?.groups || {});
+    setAtmo(nd.seating?.atmo || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const persist = (patch) => saveData({ seating: { bulletType, maxCbto, entries, groups, ...patch } });
+  const persist = (patch) => saveData({ seating: { bulletType, maxCbto, entries, groups, atmo, ...patch } });
 
   const gen = async () => {
     const m = num(maxCbto);
@@ -47,6 +49,7 @@ export default function Phase3({ project, saveData }) {
   return (
     <div>
       <Section title="Ajuste del seating de la punta" subtitle="Grupos de 5 cartuchos, escalonando 0.003&quot; hasta 0.030&quot; de salto. Anota el tamaño de grupo a 100 m." testId="seating-section">
+        <AtmoData value={atmo} onChange={(a) => { setAtmo(a); persist({ atmo: a }); }} testId="seating-atmo" />
         <div className="flex flex-wrap items-end gap-4 mb-5">
           <div>
             <label className="fc-label">Tipo de punta</label>

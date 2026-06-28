@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Flame, ListOrdered, Sparkles, Target } from "lucide-react";
 import { api } from "../lib/api";
 import { gr, num } from "../lib/format";
-import { Section, Field } from "../components/Bits";
+import { Section, Field, AtmoData } from "../components/Bits";
 import OCWChart from "../components/OCWChart";
 
 const stats = (vels) => {
@@ -35,6 +35,7 @@ export default function Phase2({ project, saveData }) {
   const [ocw, setOcw] = useState(d.load?.ocw || {}); // charge -> mm
   const [mode, setMode] = useState(d.load?.mode || "both");
   const [rec, setRec] = useState(d.load?.rec || null);
+  const [atmo, setAtmo] = useState(d.load?.atmo || {});
 
   useEffect(() => {
     const nd = project.data || {};
@@ -49,10 +50,11 @@ export default function Phase2({ project, saveData }) {
     setOcw(nd.load?.ocw || {});
     setMode(nd.load?.mode || "both");
     setRec(nd.load?.rec || null);
+    setAtmo(nd.load?.atmo || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, ...patch } });
+  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, atmo, ...patch } });
 
   const fetchPowder = async () => {
     if (!powder.powder_brand || !powder.powder_model || !powder.bullet_weight) { toast.error("Completa los datos de punta y pólvora"); return; }
@@ -143,6 +145,7 @@ export default function Phase2({ project, saveData }) {
       </Section>
 
       <Section title="Escalera de carga" subtitle="Tramos de 0.3 gr. Tres disparos por carga; la app calcula ES y SD del grupo." testId="ladder-section">
+        <AtmoData value={atmo} onChange={(a) => { setAtmo(a); persist({ atmo: a }); }} testId="ladder-atmo" />
         <div className="flex flex-wrap items-end gap-3 mb-5">
           <Field label="Carga inicial (gr)" testId="ladder-start" value={start} onChange={setStart} placeholder="42.00" />
           <Field label="Carga final (gr)" testId="ladder-end" value={end} onChange={setEnd} placeholder="44.40" />
