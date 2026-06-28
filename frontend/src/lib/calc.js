@@ -118,14 +118,16 @@ export function recommend({ mode = "both", entries }) {
     return scored.filter(([, s]) => s <= best + 0.01).map(([c]) => c);
   };
   const ocwWindow = () => {
-    const pts = entries.filter((e) => e.ocw_y != null).map((e) => [e.charge, e.ocw_y]);
+    const pts = entries.filter((e) => e.ocw_x != null && e.ocw_y != null).map((e) => [e.charge, e.ocw_x, e.ocw_y]);
     if (pts.length < 3) return [[], null];
+    const dist = (a, b) => Math.sqrt((a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
     let best = null;
     for (let i = 0; i < pts.length - 2; i++) {
       const w = pts.slice(i, i + 3);
-      const ys = w.map((x) => x[1]);
-      const rng = Math.max(...ys) - Math.min(...ys);
-      if (best == null || rng < best.rng) best = { rng, w };
+      // spread = max distance between any two group centroids in the window
+      let maxd = 0;
+      for (let a = 0; a < w.length; a++) for (let b = a + 1; b < w.length; b++) maxd = Math.max(maxd, dist(w[a], w[b]));
+      if (best == null || maxd < best.rng) best = { rng: maxd, w };
     }
     return [best.w.map((x) => x[0]), r2(best.rng)];
   };
@@ -137,14 +139,14 @@ export function recommend({ mode = "both", entries }) {
   } else if (mode === "ocw") {
     const [win, rng] = ocwWindow();
     recommended = win;
-    explanation.push(`Nodo OCW con menor variación vertical de impactos (${rng} mm).`);
+    explanation.push(`Nodo OCW: cargas con menor desplazamiento del centro de impacto (${rng} mm).`);
   } else {
     const [win, rng] = ocwWindow();
     const vel = velocityBest();
     if (win.length) {
       const inter = vel.length ? win.filter((c) => vel.includes(c)) : win;
       recommended = inter.length ? inter : win;
-      explanation.push(`Nodo OCW (variación ${rng} mm)` + (inter.length ? " cruzado con mejor ES/SD." : "."));
+      explanation.push(`Nodo OCW (desplazamiento ${rng} mm)` + (inter.length ? " cruzado con mejor ES/SD." : "."));
     } else {
       recommended = vel;
       explanation.push("Sin datos OCW suficientes; se usó ES + SD.");

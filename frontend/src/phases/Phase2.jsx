@@ -101,12 +101,12 @@ export default function Phase2({ project, saveData }) {
   };
 
   const recommend = async () => {
-    const meanArr = (a) => (a && a.length ? a.reduce((x, y) => x + Number(y), 0) / a.length : null);
+    const norm = (arr) => (arr || []).map((p) => (typeof p === "number" ? { x: 0, y: p } : p)).filter((p) => p && p.x != null && p.y != null);
+    const centroid = (arr) => (arr.length ? { x: arr.reduce((a, b) => a + b.x, 0) / arr.length, y: arr.reduce((a, b) => a + b.y, 0) / arr.length } : null);
     const entries = charges.map((c) => {
       const st = stats(vels[c] || []);
-      const arr = Array.isArray(ocw[c]) ? ocw[c] : (ocw[c] != null && ocw[c] !== "" ? [ocw[c]] : []);
-      const ocw_y = ocwEnabled ? meanArr(arr) : null;
-      return { charge: c, es: st.es, sd: st.sd, ocw_y };
+      const ce = ocwEnabled ? centroid(norm(ocw[c])) : null;
+      return { charge: c, es: st.es, sd: st.sd, ocw_x: ce ? ce.x : null, ocw_y: ce ? ce.y : null };
     });
     const res = await api.recommend({ mode, entries });
     setRec(res);
