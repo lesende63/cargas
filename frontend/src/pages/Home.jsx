@@ -73,6 +73,24 @@ export default function Home() {
     toast.success("Datos del proyecto actualizados");
   };
 
+  // Flush any pending (debounced) edits immediately when the tab is hidden/closed.
+  useEffect(() => {
+    const flush = () => {
+      if (project && Object.keys(pendingPatch.current).length) {
+        const toSend = pendingPatch.current;
+        pendingPatch.current = {};
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        api.updateProject(project.id, { data: toSend });
+      }
+    };
+    window.addEventListener("visibilitychange", flush);
+    window.addEventListener("beforeunload", flush);
+    return () => {
+      window.removeEventListener("visibilitychange", flush);
+      window.removeEventListener("beforeunload", flush);
+    };
+  }, [project]);
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0A1526" }}>
       <header className="border-b" style={{ borderColor: "rgba(212,175,55,0.2)" }}>
