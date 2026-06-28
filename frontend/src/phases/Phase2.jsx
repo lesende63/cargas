@@ -101,9 +101,12 @@ export default function Phase2({ project, saveData }) {
   };
 
   const recommend = async () => {
+    const meanArr = (a) => (a && a.length ? a.reduce((x, y) => x + Number(y), 0) / a.length : null);
     const entries = charges.map((c) => {
       const st = stats(vels[c] || []);
-      return { charge: c, es: st.es, sd: st.sd, ocw_y: ocwEnabled ? (ocw[c] ?? null) : null };
+      const arr = Array.isArray(ocw[c]) ? ocw[c] : (ocw[c] != null && ocw[c] !== "" ? [ocw[c]] : []);
+      const ocw_y = ocwEnabled ? meanArr(arr) : null;
+      return { charge: c, es: st.es, sd: st.sd, ocw_y };
     });
     const res = await api.recommend({ mode, entries });
     setRec(res);
