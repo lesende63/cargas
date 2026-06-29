@@ -28,6 +28,7 @@ export default function Phase2({ project, saveData }) {
 
   const [start, setStart] = useState(d.load?.start ?? "");
   const [end, setEnd] = useState(d.load?.end ?? "");
+  const [step, setStep] = useState(d.load?.step ?? "0.3");
   const [charges, setCharges] = useState(d.load?.charges || []);
   const [vels, setVels] = useState(d.load?.vels || {}); // charge -> [v1,v2,v3]
 
@@ -45,6 +46,7 @@ export default function Phase2({ project, saveData }) {
     setPowderRes(nd.load?.powderRes || null);
     setStart(nd.load?.start ?? "");
     setEnd(nd.load?.end ?? "");
+    setStep(nd.load?.step ?? "0.3");
     setCharges(nd.load?.charges || []);
     setVels(nd.load?.vels || {});
     setOcwEnabled(nd.load?.ocwEnabled || false);
@@ -56,7 +58,7 @@ export default function Phase2({ project, saveData }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
-  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, atmo, groupSizes, ...patch } });
+  const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, step, charges, vels, ocwEnabled, ocw, mode, rec, atmo, groupSizes, ...patch } });
 
   const updatePowder = (field, v) => { const np = { ...powder, [field]: v }; setPowder(np); persist({ powder: np }); };
 
@@ -86,8 +88,10 @@ export default function Phase2({ project, saveData }) {
 
   const genLadder = async () => {
     const s = num(start), e = num(end);
+    const st = num(step);
     if (s == null || e == null) { toast.error("Indica carga inicial y final"); return; }
-    const res = await api.chargeLadder({ start: s, end: e, step: 0.3 });
+    if (st == null || st <= 0) { toast.error("Indica un diferencial válido"); return; }
+    const res = await api.chargeLadder({ start: s, end: e, step: st });
     setCharges(res.charges);
     const nv = { ...vels };
     res.charges.forEach((c) => { if (!nv[c]) nv[c] = ["", "", ""]; });
@@ -159,11 +163,12 @@ export default function Phase2({ project, saveData }) {
         {powderRes?.notes && <p className="mt-2 text-xs" style={{ color: "#FBBF24" }}>⚠ {powderRes.notes}</p>}
       </Section>
 
-      <Section title="Escalera de carga" subtitle="Tramos de 0.3 gr. Tres disparos por carga; la app calcula ES y SD del grupo." testId="ladder-section">
+      <Section title="Escalera de carga" subtitle="Genera la escalera con el diferencial que elijas (por defecto 0.3 gr). Tres disparos por carga; la app calcula ES y SD del grupo." testId="ladder-section">
         <AtmoData value={atmo} onChange={(a) => { setAtmo(a); persist({ atmo: a }); }} testId="ladder-atmo" />
         <div className="flex flex-wrap items-end gap-3 mb-5">
           <Field label="Carga inicial (gr)" testId="ladder-start" value={start} onChange={setStart} placeholder="42.00" />
           <Field label="Carga final (gr)" testId="ladder-end" value={end} onChange={setEnd} placeholder="44.40" />
+          <Field label="Diferencial (gr)" testId="ladder-step" value={step} onChange={(v) => { setStep(v); persist({ step: v }); }} placeholder="0.3" />
           <button className="fc-btn flex items-center gap-2" data-testid="gen-ladder-btn" onClick={genLadder}><ListOrdered size={16} /> Generar escalera</button>
         </div>
 
