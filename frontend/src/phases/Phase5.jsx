@@ -26,9 +26,9 @@ export default function Phase5({ project, saveData }) {
     const cl = d.case_length;
     if (!cl || !cl.lengths || !cl.lengths.length) return null;
     let m = Math.min(...cl.lengths.map(Number));
-    if (cl.unit === "mm") m = m / 25.4;
-    return Math.round(m * 1000) / 1000;
+    return cl.unit === "mm" ? Math.round(m * 100) / 100 : Math.round(m * 1000) / 1000;
   };
+  const lenUnit = d.case_length?.unit || "in";
   const auto = {
     a: seatingBest(),
     b: caseTrim(),
@@ -48,7 +48,7 @@ export default function Phase5({ project, saveData }) {
   };
   const cartRows = [
     { k: "a", label: "A · Base → ojiva de la punta", src: "Fase 3 (mejor grupo)" },
-    { k: "b", label: "B · Vaina base → boca de cuello", src: "Fase 1 (recorte)" },
+    { k: "b", label: "B · Vaina base → boca de cuello", src: `Fase 1 (recorte, ${lenUnit === "mm" ? "mm" : "pulgadas"})` },
     { k: "c", label: "C · Ø cuello vaina disparada", src: "Fase 1" },
     { k: "c1", label: "C1 · Ø cuello con bala montada", src: "Fase 1" },
     { k: "d", label: "D · Arrastre de la punta", src: "Manual" },
@@ -64,7 +64,7 @@ export default function Phase5({ project, saveData }) {
         </button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <div className="rounded-sm p-3" style={{ background: "#0A1526", border: "1px solid #1A2E50" }}>
-            <CartridgeDiagram values={{ a: cartVal("a"), b: cartVal("b"), c: cartVal("c"), c1: cartVal("c1"), d: cartVal("d"), e: cartVal("e"), f: cartVal("f") }} />
+            <CartridgeDiagram values={{ a: cartVal("a"), b: cartVal("b"), c: cartVal("c"), c1: cartVal("c1"), d: cartVal("d"), e: cartVal("e"), f: cartVal("f") }} units={{ b: lenUnit }} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {cartRows.map((r) => (

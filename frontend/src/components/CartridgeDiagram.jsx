@@ -1,7 +1,12 @@
 // Schematic cartridge side-view with measurement callouts A–F.
-export default function CartridgeDiagram({ values }) {
+export default function CartridgeDiagram({ values, units }) {
   const v = values || {};
-  const L = (k) => (v[k] !== undefined && v[k] !== "" && v[k] !== null ? `${Number(v[k]).toFixed(3)}"` : "—");
+  const L = (k) => {
+    const val = v[k];
+    if (val === undefined || val === "" || val === null) return "—";
+    const u = (units && units[k]) || "in";
+    return u === "mm" ? `${Number(val).toFixed(2)} mm` : `${Number(val).toFixed(3)}"`;
+  };
   const gold = "#D4AF37", line = "#1A2E50", txt = "#94A3B8";
 
   return (
