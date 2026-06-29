@@ -218,6 +218,10 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      <footer className="border-t mt-6 py-5 text-center" style={{ borderColor: "rgba(212,175,55,0.2)" }} data-testid="app-footer">
+        <p className="text-xs" style={{ color: "#94A3B8" }}>© Fco. Javier Lesende Sieira 2026</p>
+      </footer>
     </div>
   );
 }

@@ -47,6 +47,7 @@ export default function AuthGate({ children }) {
           autoFocus
         />
         <button type="submit" className="fc-btn w-full mt-5" data-testid="auth-submit">Entrar</button>
+        <p className="text-xs text-center mt-6" style={{ color: "#94A3B8" }}>© Fco. Javier Lesende Sieira 2026</p>
       </form>
     </div>
   );
