@@ -1,5 +1,5 @@
-// F-Class Reload Lab - service worker (app-shell cache, network-first for API)
-const CACHE = "fclass-reload-v3";
+// F-Class Reload Lab - service worker (network-first, cache fallback for offline)
+const CACHE = "fclass-reload-v4";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./logo-mark.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -28,27 +28,17 @@ self.addEventListener("fetch", (event) => {
   // Never cache API calls — always go to network.
   if (url.pathname.startsWith("/api/")) return;
 
-  // App navigations: network first, fall back to cached shell when offline.
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).catch(() => caches.match("./index.html"))
-    );
-    return;
-  }
-
-  // Static assets: cache first, then network.
+  // Network-first for everything same-origin: always fresh when online, fall back
+  // to cache when offline. (Cache-first served stale JS bundles and broke updates.)
   event.respondWith(
-    caches.match(request).then((cached) => {
-      return (
-        cached ||
-        fetch(request).then((resp) => {
-          if (resp && resp.status === 200 && resp.type === "basic") {
-            const copy = resp.clone();
-            caches.open(CACHE).then((c) => c.put(request, copy));
-          }
-          return resp;
-        }).catch(() => cached)
-      );
-    })
+    fetch(request)
+      .then((resp) => {
+        if (resp && resp.status === 200 && resp.type === "basic") {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(request, copy));
+        }
+        return resp;
+      })
+      .catch(() => caches.match(request).then((cached) => cached || caches.match("./index.html")))
   );
 });

@@ -1,0 +1,33 @@
+{
+  "summary": "Frontend-only verification of HeadSpace 'Datum del casquillo' 3-decimal fix. ALL bug fix assertions PASSED on the public URL (post SW unregister + cache clear to bypass any stale v3 SW). hs-datum initial value renders with THREE decimals for both presets (.308 Winchester -> '0.400', .30-06 Springfield -> '0.375'), and the onBlur reformat works correctly (user types '0.42', after blur field becomes '0.420'). Headspace calc still functions: fired 1.630 -> optimal 1.628. SW is now v4 with network-first strategy.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "auth_gate": "PASS - '63-G1' unlocks app",
+    "project_create_308": "PASS - .308 Winchester project created via select_option",
+    "hs_datum_308_initial": "PASS - value is exactly '0.400' (3 decimals)",
+    "hs_datum_blur_reformat": "PASS - typing '0.42' + blur reformats to '0.420'",
+    "headspace_calc": "PASS - fired 1.630 -> 'Headspace óptimo (cerrojo) 1.628\"' shown in headspace-result",
+    "hs_datum_3006_initial": "PASS - .30-06 Springfield project shows hs-datum '0.375' (3 decimals)",
+    "service_worker": "v4 fclass-reload, network-first strategy confirmed in /public/service-worker.js"
+  },
+  "test_report_links": ["/app/test_reports/iteration_8.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "React hydration warning in console: <span> rendered as a child of <option> in ProjectBar.jsx line 47. The dev runtime is wrapping the project label expression in a <span style='display:contents'> which is invalid inside <option>. This is a benign dev-tooling instrumentation artifact (x-excluded=true wrapper) but produces a noisy hydration error log. If it appears in production builds, refactor ProjectBar option content to a plain string only.",
+    "service-worker.js APP_SHELL still references './icon-192.png' which is no longer used in UI (carried over from previous iteration). Safe to remove on next cleanup.",
+    "Phase1.jsx fmt3 logic correctly handles empty / NaN inputs; no issues."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped", "frontend": "100%"},
+  "test_credentials": "ACCESS PASSWORD: 63-G1",
+  "seed_data_creation": "2 ephemeral projects created via UI: '.308 Winchester · Lapua · DTM' and '.30-06 Springfield · Lapua · DTM2'",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Datum 3-decimal bug fix is fully verified on the public URL. The test had to unregister existing service workers and clear caches() in the page first because the previous v3 SW (cache-first) was still active in the testing browser context. After clearing and reload, the v4 network-first SW activated and fresh JS loaded. Caliber presets confirmed: .308 Win -> 0.400, .30-06 Sprg -> 0.375. project-select and new-caliber are <select>, so use page.select_option(label=...). Only minor (cosmetic) issue is a React dev-tooling hydration warning in ProjectBar option labels — not related to the bug.",
+  "rca of the issue": "Original bug: hs-datum displayed '0.4' / '0.40' instead of '0.400'. Root cause confirmed two-fold: (1) Phase1.jsx state init/reset stored raw numeric strings without padding to 3 decimals — fixed by fmt3 helper applied at init, on the dependency reset (useEffect on project.id), and on the Field's onBlur via Bits.jsx new onBlur prop. (2) Service worker v3 used cache-first for static assets so the updated JS bundle was not served — fixed by bumping CACHE to 'fclass-reload-v4' and switching strategy to network-first (cache only as offline fallback). Both fixes verified end-to-end."
+}
