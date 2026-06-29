@@ -12,17 +12,24 @@ const PHASE_PDFS = {
 
 export default function HelpLink({ phase }) {
   const url = PHASE_PDFS[phase];
-  if (url) {
-    return (
-      <a href={url} target="_blank" rel="noopener noreferrer" data-testid={`help-pdf-${phase}`}
-        className="fc-btn-outline inline-flex items-center gap-2 mt-4">
-        <FileText size={16} /> Guía de ayuda (PDF) · Fase {phase}
-      </a>
-    );
-  }
-  return (
-    <button disabled data-testid={`help-pdf-${phase}`} className="fc-btn-outline inline-flex items-center gap-2 mt-4" style={{ opacity: 0.5, cursor: "not-allowed" }}>
-      <FileText size={16} /> Guía de ayuda (PDF) · en preparación
+  // Same responsive grid as PhaseNav so the help button aligns under its phase
+  // tab and matches its horizontal width exactly.
+  const spacers = Array.from({ length: Math.max(phase - 1, 0) });
+  const inner = url ? (
+    <a href={url} target="_blank" rel="noopener noreferrer" data-testid={`help-pdf-${phase}`}
+      className="fc-btn-outline w-full inline-flex items-center justify-center gap-2 text-center" style={{ padding: "8px 6px" }}>
+      <FileText size={16} /> Ayuda PDF
+    </a>
+  ) : (
+    <button disabled data-testid={`help-pdf-${phase}`} className="fc-btn-outline w-full inline-flex items-center justify-center gap-2" style={{ opacity: 0.5, cursor: "not-allowed", padding: "8px 6px" }}>
+      <FileText size={16} /> Ayuda PDF
     </button>
+  );
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-3">
+      {spacers.map((_, i) => <div key={i} />)}
+      {inner}
+    </div>
   );
 }
