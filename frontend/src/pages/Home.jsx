@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { Crosshair, Download, Upload, Power } from "lucide-react";
-import { api } from "../lib/api";
+import { Download, Upload, Power } from "lucide-react";import { api } from "../lib/api";
 import ProjectBar from "../components/ProjectBar";
 import PhaseNav from "../components/PhaseNav";
 import Phase1 from "../phases/Phase1";
@@ -167,7 +166,7 @@ export default function Home() {
           <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="close-app-btn" onClick={closeApp} title="Cerrar aplicación">
             <Power size={16} /> <span className="hidden sm:inline">Cerrar</span>
           </button>
-          <Crosshair size={30} color="#D4AF37" />
+          <img src="/icon-192.png" alt="F-Class Reload Lab" width="40" height="40" className="rounded-sm" data-testid="app-logo" />
           <div>
             <h1 className="fc-title text-2xl sm:text-3xl font-black uppercase leading-none" data-testid="app-title">
               F-Class Reload Lab

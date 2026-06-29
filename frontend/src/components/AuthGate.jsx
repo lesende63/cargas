@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Crosshair } from "lucide-react";
+import { Lock } from "lucide-react";
 
 const PASSWORD = "63-G1";
 
@@ -32,7 +32,7 @@ export default function AuthGate({ children }) {
 
       <form onSubmit={submit} className="fc-card p-8 max-w-sm w-full" style={{ borderColor: "rgba(212,175,55,0.3)" }}>
         <div className="flex flex-col items-center mb-6">
-          <Crosshair size={40} color="#D4AF37" />
+          <img src="/icon-192.png" alt="F-Class Reload Lab" width="64" height="64" className="rounded-sm" />
           <h1 className="fc-title text-2xl font-black uppercase mt-3 text-center leading-tight">F-Class Reload Lab</h1>
           <p className="text-xs uppercase tracking-[0.25em] mt-2" style={{ color: "#94A3B8" }}>Acceso restringido</p>
         </div>
