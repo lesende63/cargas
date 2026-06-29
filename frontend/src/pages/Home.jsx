@@ -168,8 +168,8 @@ export default function Home() {
           </button>
           <img src="/icon-192.png" alt="F-Class Reload Lab" width="40" height="40" className="rounded-sm" data-testid="app-logo" />
           <div>
-            <h1 className="fc-title text-2xl sm:text-3xl font-black uppercase leading-none" data-testid="app-title">
-              F-Class Reload Lab
+            <h1 className="fc-title text-3xl sm:text-4xl font-black uppercase leading-none" data-testid="app-title">
+              RELOAD LAB
             </h1>
             <p className="text-xs uppercase tracking-[0.25em] mt-1" style={{ color: "#94A3B8" }}>
               Desarrollo de cargas de precisión
