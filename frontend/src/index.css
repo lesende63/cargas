@@ -114,3 +114,8 @@ body {
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: var(--navy); }
 ::-webkit-scrollbar-thumb { background: var(--navy-elevated); border-radius: 4px; }
+
+/* Hide the platform "Made with Emergent" badge (static or injected) */
+#emergent-badge,
+a[href*="emergent-badge"],
+a[href*="emergent.sh"] { display: none !important; }
