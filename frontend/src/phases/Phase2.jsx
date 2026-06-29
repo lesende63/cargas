@@ -68,7 +68,7 @@ export default function Phase2({ project, saveData }) {
       persist({ powderRes: res, end: end || String(res.max_plus_10) });
       toast.success("Datos de pólvora generados");
     } catch (e) {
-      toast.error("Sin conexión: introduce la carga mínima y máxima manualmente.");
+      toast.error("No se pudieron obtener los datos del fabricante. Revisa la conexión o introduce la carga mínima y máxima manualmente.");
     } finally {
       setLoadingPowder(false);
     }

@@ -1,0 +1,36 @@
+{
+  "summary": "Frontend-only verification of two targeted bug fixes in the F-Class PWA: (1) Decimal-separator warning modal and (2) AI powder-data fetch no longer falsely reporting 'no connection'. All four review scenarios pass end-to-end in the live preview URL with no code changes needed.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ProjectBar select", "issues": ["Pre-existing hydration warning: <span> wrapper rendered inside <option> by x-source instrumentation. Cosmetic only, not blocking; not introduced by this iteration."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Home.jsx decimal-warning regex /^[+-]?[\\d.,\\s]*$/ + must contain a digit + must contain a comma: correctly triggers on '0,343' / '42,0' and correctly ignores text-field values containing letters such as 'Lapua, lote viejo' and '185gr, test'.",
+    "api.js powderData() no longer guards on navigator.onLine; it just performs the fetch and surfaces a toast on real network failure. Phase2.fetchPowder catches the error and shows a Spanish toast pointing the user to the manual fallback. Confirmed real online call returns ~41/45 gr for Berger 185gr + Hodgdon Varget in <5s.",
+    "Phase2.setPowderField recomputes max_plus_10 on every manual edit: 42.0/44.0 -> 48.40 gr confirmed in UI (red monospace text).",
+    "Minor (not blocking, pre-existing): the global 'input' listener in Home.jsx fires on every keystroke. For very long numeric-looking strings ('Lapua, lote viejo' would never match because of letters, so OK), but the modal is only auto-dismissed via the OK button — acceptable UX."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (frontend-only request, but POST /api/powder-data spot-checked via curl and returned valid numeric min/max/notes)", "frontend": "100% (5/5 scenarios pass)" },
+  "test_credentials": "n/a — no auth, fully offline localStorage app.",
+  "seed_data_creation": "Playwright test cleared localStorage and then created a '.308 Winchester / Lapua / D1' project. Project remains in localStorage of the test browser session only; no impact on shared backend state.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "App URL = REACT_APP_BACKEND_URL. Decimal-separator modal lives in /app/frontend/src/pages/Home.jsx (data-testid='decimal-warning-modal', dismiss via 'decimal-warning-ok'). It uses a global capture-phase 'input' listener with regex /^[+-]?[\\d.,\\s]*$/ — so to NOT trigger it on a text field, just type any letter alongside the comma. The /api/powder-data endpoint is reachable from the preview URL and responds with {min_grains, max_grains, max_plus_10, notes} in ~3-5s for typical bullet/powder combos. Manual entry path: setPowderField in Phase2.jsx recalculates max_plus_10 = round(max * 1.1 * 100)/100.",
+  "test_run_evidence": {
+    "decimal_warning_numeric_field_bush_neck_fired": "value '0,343' -> modal visible TRUE, OK click dismisses (visible FALSE)",
+    "decimal_warning_numeric_field_ladder_start": "value '42,0' -> modal visible TRUE",
+    "no_warning_text_field_bullet_brand": "value 'Lapua, lote viejo' -> modal visible FALSE (expected)",
+    "no_warning_text_field_bullet_weight": "value '185gr, test' -> modal visible FALSE (expected)",
+    "powder_data_online": "Berger / 185gr / Hodgdon / Varget filled powder-min=41 and powder-max=45 within ~4s; Máxima +10% block displayed '49.50 gr'; no false 'sin conexión' toast appeared.",
+    "powder_data_manual": "Manual 42.0 / 44.0 -> Máxima +10% block displayed '48.40 gr' (exactly as required).",
+    "backend_curl_spot_check": "POST /api/powder-data with same payload returned {\"min_grains\":40.5,\"max_grains\":45.0,\"max_plus_10\":49.5,\"notes\":\"Empezar siempre por la carga mínima...\"}"
+  },
+  "rca of the issue": "Not applicable — both reported fixes (decimal warning modal & removal of navigator.onLine guard in api.powderData) are verified working as intended on the live preview."
+}

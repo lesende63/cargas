@@ -17,6 +17,22 @@ export default function Home() {
   const saveTimer = useRef(null);
   const pendingPatch = useRef({});
   const importInput = useRef(null);
+  const [decimalWarn, setDecimalWarn] = useState(false);
+
+  // Warn (popup) when a numeric field uses a comma instead of a point as decimal separator.
+  useEffect(() => {
+    const handler = (e) => {
+      const t = e.target;
+      if (t && t.tagName === "INPUT") {
+        const v = t.value || "";
+        if (v.includes(",") && /^[+-]?[\d.,\s]*$/.test(v) && /\d/.test(v)) {
+          setDecimalWarn(true);
+        }
+      }
+    };
+    document.addEventListener("input", handler, true);
+    return () => document.removeEventListener("input", handler, true);
+  }, []);
 
   const exportProjects = () => {
     const data = api.exportProjects();
@@ -132,6 +148,19 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0A1526" }}>
+      {decimalWarn && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" style={{ background: "rgba(10,21,38,0.8)" }} data-testid="decimal-warning-modal">
+          <div className="fc-card p-6 max-w-md w-full" style={{ borderColor: "#D4AF37" }}>
+            <h3 className="fc-subtitle text-lg font-bold mb-2">Separador decimal incorrecto</h3>
+            <p className="text-sm mb-5" style={{ color: "#E2E8F0" }}>
+              Usa el <b>punto (.)</b> como separador decimal, no la coma (,). Por ejemplo: <span className="font-mono-data" style={{ color: "#D4AF37" }}>0.343</span>, no 0,343.
+            </p>
+            <div className="flex justify-end">
+              <button className="fc-btn" data-testid="decimal-warning-ok" onClick={() => setDecimalWarn(false)}>Entendido</button>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="border-b" style={{ borderColor: "rgba(212,175,55,0.2)" }}>
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center gap-3">
           <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="close-app-btn" onClick={closeApp} title="Cerrar aplicación">

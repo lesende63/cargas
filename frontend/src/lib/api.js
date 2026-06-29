@@ -28,11 +28,9 @@ export const api = {
   primerLadder: (b) => ok(calc.primerLadder(b)),
   recommend: (b) => ok(calc.recommend(b)),
 
-  // Requires internet (AI). Throws when offline so the UI can prompt manual entry.
+  // Requires internet (AI). We do NOT trust navigator.onLine (unreliable in PWA);
+  // we attempt the request and only fail if the network call itself fails.
   powderData: async (b) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      throw new Error("offline");
-    }
     const resp = await fetch(`${API}/powder-data`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
