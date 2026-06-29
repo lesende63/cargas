@@ -8,6 +8,7 @@ import Phase1 from "../phases/Phase1";
 import Phase2 from "../phases/Phase2";
 import Phase3 from "../phases/Phase3";
 import Phase4 from "../phases/Phase4";
+import Phase5 from "../phases/Phase5";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -205,6 +206,7 @@ export default function Home() {
               {phase === 2 && <Phase2 project={project} saveData={saveData} />}
               {phase === 3 && <Phase3 project={project} saveData={saveData} />}
               {phase === 4 && <Phase4 project={project} saveData={saveData} />}
+              {phase === 5 && <Phase5 project={project} saveData={saveData} />}
             </div>
           </>
         )}

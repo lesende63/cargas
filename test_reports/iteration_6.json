@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend-only verification of (1) AuthGate password '63-G1' with denied modal and (2) 5-phase navigation with cartridge data relocated to Fase 5. All 4 review scenarios pass on the live preview URL.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ProjectBar <select> options", "issues": ["Pre-existing hydration warning: x-source instrumentation injects a <span> inside <option>. Cosmetic, not introduced by this iteration."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "AuthGate.jsx is correct: PASSWORD='63-G1', localStorage key fclass_authed='1', denied modal text exactly 'No está usted autorizado a usar esta aplicación', auth-denied-ok dismisses and clears pwd. Mounted in App.js wrapping all routes.",
+    "PhaseNav.jsx lists 5 phases with Fase 5 = 'Datos del cartucho'. Grid is lg:grid-cols-5. phase-tab-1..5 testids present.",
+    "Phase4.jsx now only renders the primer-section (Escalera de seating del pistón). No cartridge-section, no cartridge SVG. Verified via live DOM: cartridge-section count=0 on Fase 4.",
+    "Phase5.jsx renders the cartridge-section with CartridgeDiagram (cartridge-svg) and cart-a..cart-f inputs. collect-cartridge-btn copies auto-derived values from Fase 1/3/4 into cart state via saveData({cartridge}).",
+    "Home.jsx renders Phase5 when phase===5 (line 209). saveData has 700ms debounce + flush on visibilitychange/beforeunload.",
+    "Persistence verified on reload+reselect: cart-d='0.015' (manual override) survives full page reload + project re-selection. Other collected values (c=0.343, c1=0.338, e=0.129, f=1.628, b=2.005) also persisted in fclass_projects[*].data.cartridge.",
+    "Non-blocking observation (carried over from iteration 5): pocket-depth and primer-height in Fase 4 still only persist when 'Generar escalera' or 'Recoger medidas' is pressed; typing alone is not debounced-saved. Consider persisting onChange for consistency."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (frontend-only)", "frontend": "100% (4/4 scenarios)" },
+  "test_credentials": "Access password: 63-G1 (offline localStorage, no backend auth).",
+  "seed_data_creation": "Project '.308 Winchester / Lapua / P5' created in browser localStorage (key fclass_projects).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "To reach the app first pass AuthGate with '63-G1' (localStorage fclass_authed='1'). To test wrong-password popup, run localStorage.clear() then reload so the gate re-appears. Cartridge data has been MOVED from Fase 4 to Fase 5; Fase 4 now is primer-only. phase-tab-5 testid exists. cart-* testids live under Phase5.jsx. saveData debounce is 700ms; wait >=1000ms after the last input fill before reading localStorage. project-select and new-caliber are <select> elements - use select_option().",
+  "test_run_evidence": {
+    "auth_gate_before_login": "auth-input and auth-submit visible; app-title and project-select hidden (verified via is_visible=False).",
+    "wrong_password_modal_text": "'No está usted autorizado a usar esta aplicaciónCerrar' (modal contains exact required string).",
+    "auth_denied_ok_closes_modal": "true",
+    "correct_password_unlocks": "After typing '63-G1' + submit, app-title visible, project-select visible, localStorage.fclass_authed=='1'.",
+    "reload_persists_unlock": "After reload auth-input count=0 and app-title still visible.",
+    "five_phase_tabs": "phase-tab-1..phase-tab-5 all visible.",
+    "fase4_primer_only": "primer-section visible, cartridge-section count = 0 on Fase 4.",
+    "fase5_cartridge_section": "cartridge-section visible, cartridge-svg visible, cart-a..cart-f inputs present.",
+    "collect_results": "After collect: c=0.343, c1=0.338, e=0.129, f=1.628, b=2.005 (a empty - Fase 3 seating not seeded, by design).",
+    "manual_override_persists": "cart-d set to 0.015 -> reload -> reselect project -> Fase 5 -> cart-d reads '0.015'."
+  },
+  "rca of the issue": "Not applicable - all reviewed features working as designed."
+}

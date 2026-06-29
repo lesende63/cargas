@@ -3,11 +3,12 @@ const PHASES = [
   { n: 2, label: "Carga adecuada" },
   { n: 3, label: "Seating punta" },
   { n: 4, label: "Seating pistón" },
+  { n: 5, label: "Datos del cartucho" },
 ];
 
 export default function PhaseNav({ phase, setPhase }) {
   return (
-    <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {PHASES.map((p) => {
         const active = phase === p.n;
         return (
