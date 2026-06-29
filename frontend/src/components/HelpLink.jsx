@@ -4,7 +4,7 @@ import { FileText } from "lucide-react";
 // Files live in /app/frontend/public/help/ and are served at /help/<file>.pdf
 const PHASE_PDFS = {
   1: "/help/fase1.pdf",
-  2: "",
+  2: "/help/fase2.pdf",
   3: "",
   4: "",
   5: "",
