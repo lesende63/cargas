@@ -1,0 +1,38 @@
+{
+  "summary": "Frontend-only verification of two new features in Fase 4 (cartridge measurements section + SVG diagram with auto-derive + manual override) and Fase 2 (powder-lot field). All 4 review scenarios pass on the live preview URL.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ProjectBar <select> options", "issues": ["Pre-existing hydration warning: x-source instrumentation injects a <span> child into <option>. Cosmetic, not introduced by this iteration; does not affect functionality."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Phase4.jsx renders xl:grid-cols-2 with the new 'Medidas del cartucho' section to the right of the primer section. cartridge-section, cartridge-svg, collect-cartridge-btn and cart-a..cart-f data-testids are all present and wired.",
+    "Auto-derive formulas verified on live data: A=2.25 (smallest-group seating CBTO from Fase 3), B=2.005 (Fase 1 case length min, converted to inches when needed), C=0.343 (bushing neck_fired), C1=0.338 (loaded_neck = neck_fired - wall + bullet ... evaluated to 0.338 for .308/0.015 wall), E=0.129 (primer pocket from Fase 4 state), F=1.628 (headspace result.optimal_headspace).",
+    "Manual override path (setCartField -> saveData({cartridge: next})) confirmed in localStorage under fclass_projects[0].data.cartridge: {a:'2.248', b:2.005, c:0.343, c1:0.338, d:'0.015', e:0.129, f:1.628}. After full page reload + project re-selection, cart-d and cart-a display the overrides while remaining derived fields still render their saved/auto values.",
+    "Phase2.jsx powder-lot field is wired via updatePowder -> persist -> saveData. localStorage path fclass_projects[0].data.load.powder.powder_lot = 'LOT-99' after typing and is restored after reload. bullet-brand/bullet-weight/powder-brand/powder-model now also persist on each keystroke (previous iterations had a regression with onBlur-only persistence).",
+    "Collect toast 'Medidas recogidas de las fases' visible after pressing collect-cartridge-btn (Sonner toast).",
+    "Note (non-blocking observation, NOT introduced by this iteration): pocket-depth and primer-height inputs in Fase 4 only persist via the 'Generar escalera' button (or once setVel runs). Typing pocket=0.129 then navigating to another phase without pressing 'Generar escalera' or 'Recoger medidas' loses the value (state-only). After pressing 'Recoger medidas' the value is baked into data.cartridge.e and survives navigation/reload. Consider persisting these two fields onChange (like Phase2.updatePowder) for consistency with the rest of the app.",
+    "saveData in Home.jsx has a 700ms debounce + flush on visibilitychange. Tests must wait >700ms after the last fill before reading localStorage; reload also triggers a flush. No data loss observed in practice."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (frontend-only)", "frontend": "100% (4/4 scenarios)" },
+  "test_credentials": "n/a - offline localStorage app, no auth.",
+  "seed_data_creation": "Project '.308 Winchester / Lapua / CART1' created in the test browser's localStorage (key fclass_projects). No shared backend state.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Storage key is 'fclass_projects' (array of projects, not {projects:[]}). saveData has a 700ms debounce, so wait >=1000ms after the last input fill before reading localStorage. project-select and new-caliber are <select> elements with x-source <span> children inside <option>; use page.evaluate + select_option(value=...). Cartridge collect uses cart[k] !== undefined && cart[k] !== '' ? cart[k] : auto[k] for the displayed value. Pocket-depth/primer-height fields in Fase 4 only persist on Generar escalera or Recoger medidas click - not on each keystroke. Seating row testids use 3-decimal stripped form (e.g. seating-row-2.25, group-2.25).",
+  "test_run_evidence": {
+    "cartridge_section_visible": "cartridge-section + cartridge-svg both visible on Fase 4.",
+    "auto_values_displayed_before_collect": "{a:'2.25', b:'2.005', c:'0.343', c1:'0.338', d:'', e:'0.129', f:'1.628'} - matches expectations from the source phases.",
+    "collect_toast": "'Medidas recogidas de las fases' shown after clicking collect-cartridge-btn.",
+    "localStorage_after_collect": "fclass_projects[0].data.cartridge = {a:2.25, b:2.005, c:0.343, c1:0.338, e:0.129, f:1.628}.",
+    "manual_override_persist": "After setting cart-d=0.015 and cart-a=2.248 and reloading + reselecting project, Fase 4 shows cart-d=0.015 and cart-a=2.248; localStorage cartridge contains d:'0.015', a:'2.248' plus the previously-collected auto fields.",
+    "powder_lot_persist": "Fase 2 powder-lot field present. localStorage fclass_projects[0].data.load.powder = {bullet_brand:'Berger', bullet_weight:'200gr', powder_brand:'Hodgdon', powder_model:'H4350', powder_lot:'LOT-99'}. Values restored verbatim after reload + project reselection."
+  },
+  "rca of the issue": "Not applicable - both features verified working as designed."
+}

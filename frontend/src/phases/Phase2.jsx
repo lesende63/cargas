@@ -22,7 +22,7 @@ const stats = (vels) => {
 export default function Phase2({ project, saveData }) {
   const d = project.data || {};
   const [jump, setJump] = useState(d.load?.jump ?? "0.020");
-  const [powder, setPowder] = useState(d.load?.powder || { bullet_brand: "", bullet_weight: "", powder_brand: "", powder_model: "" });
+  const [powder, setPowder] = useState(d.load?.powder || { bullet_brand: "", bullet_weight: "", powder_brand: "", powder_model: "", powder_lot: "" });
   const [powderRes, setPowderRes] = useState(d.load?.powderRes || null);
   const [loadingPowder, setLoadingPowder] = useState(false);
 
@@ -41,7 +41,7 @@ export default function Phase2({ project, saveData }) {
   useEffect(() => {
     const nd = project.data || {};
     setJump(nd.load?.jump ?? "0.020");
-    setPowder(nd.load?.powder || { bullet_brand: "", bullet_weight: "", powder_brand: "", powder_model: "" });
+    setPowder(nd.load?.powder || { bullet_brand: "", bullet_weight: "", powder_brand: "", powder_model: "", powder_lot: "" });
     setPowderRes(nd.load?.powderRes || null);
     setStart(nd.load?.start ?? "");
     setEnd(nd.load?.end ?? "");
@@ -57,6 +57,8 @@ export default function Phase2({ project, saveData }) {
   }, [project.id]);
 
   const persist = (patch) => saveData({ load: { ...d.load, jump, powder, powderRes, start, end, charges, vels, ocwEnabled, ocw, mode, rec, atmo, groupSizes, ...patch } });
+
+  const updatePowder = (field, v) => { const np = { ...powder, [field]: v }; setPowder(np); persist({ powder: np }); };
 
   const fetchPowder = async () => {
     if (!powder.powder_brand || !powder.powder_model || !powder.bullet_weight) { toast.error("Completa los datos de punta y pólvora"); return; }
@@ -133,10 +135,11 @@ export default function Phase2({ project, saveData }) {
 
       <Section title="Datos de carga (pólvora)" subtitle="La app genera carga mínima/máxima según punta y pólvora. Máximo +10% solo bajo tu responsabilidad." testId="powder-section">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-          <Field label="Marca punta" testId="bullet-brand" value={powder.bullet_brand} onChange={(v) => setPowder({ ...powder, bullet_brand: v })} placeholder="Berger" />
-          <Field label="Peso punta" testId="bullet-weight" value={powder.bullet_weight} onChange={(v) => setPowder({ ...powder, bullet_weight: v })} placeholder="200gr" />
-          <Field label="Marca pólvora" testId="powder-brand" value={powder.powder_brand} onChange={(v) => setPowder({ ...powder, powder_brand: v })} placeholder="Hodgdon" />
-          <Field label="Modelo pólvora" testId="powder-model" value={powder.powder_model} onChange={(v) => setPowder({ ...powder, powder_model: v })} placeholder="H4350" />
+          <Field label="Marca punta" testId="bullet-brand" value={powder.bullet_brand} onChange={(v) => updatePowder("bullet_brand", v)} placeholder="Berger" />
+          <Field label="Peso punta" testId="bullet-weight" value={powder.bullet_weight} onChange={(v) => updatePowder("bullet_weight", v)} placeholder="200gr" />
+          <Field label="Marca pólvora" testId="powder-brand" value={powder.powder_brand} onChange={(v) => updatePowder("powder_brand", v)} placeholder="Hodgdon" />
+          <Field label="Modelo pólvora" testId="powder-model" value={powder.powder_model} onChange={(v) => updatePowder("powder_model", v)} placeholder="H4350" />
+          <Field label="Lote de la pólvora" testId="powder-lot" value={powder.powder_lot} onChange={(v) => updatePowder("powder_lot", v)} placeholder="Nº de lote" />
         </div>
         <button className="fc-btn flex items-center gap-2" data-testid="fetch-powder-btn" onClick={fetchPowder} disabled={loadingPowder}>
           <Flame size={16} /> {loadingPowder ? "Generando..." : "Generar datos con IA (online)"}
