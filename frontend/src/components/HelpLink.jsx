@@ -3,7 +3,7 @@ import { FileText } from "lucide-react";
 // PDF help guides per phase. Add the file path/URL as each guide is provided.
 // Files live in /app/frontend/public/help/ and are served at /help/<file>.pdf
 const PHASE_PDFS = {
-  1: "",
+  1: "/help/fase1.pdf",
   2: "",
   3: "",
   4: "",
