@@ -4,7 +4,7 @@ import { Lock, Crosshair } from "lucide-react";
 const PASSWORD = "63-G1";
 
 export default function AuthGate({ children }) {
-  const [authed, setAuthed] = useState(() => localStorage.getItem("fclass_authed") === "1");
+  const [authed, setAuthed] = useState(false);
   const [pwd, setPwd] = useState("");
   const [denied, setDenied] = useState(false);
 
@@ -13,7 +13,6 @@ export default function AuthGate({ children }) {
   const submit = (e) => {
     e.preventDefault();
     if (pwd === PASSWORD) {
-      localStorage.setItem("fclass_authed", "1");
       setAuthed(true);
     } else {
       setDenied(true);
