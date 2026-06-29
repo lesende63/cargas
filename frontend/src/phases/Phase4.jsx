@@ -113,8 +113,8 @@ export default function Phase4({ project, saveData }) {
       <Section title="Escalera de seating del pistón" subtitle="Grupos de 5 cartuchos. Pretensión en pasos de 0.002&quot; (el primero a cero). La app calcula ES y SD." testId="primer-section">
         <AtmoData value={atmo} onChange={(a) => { setAtmo(a); persist({ atmo: a }); }} testId="primer-atmo" />
         <div className="flex flex-wrap items-end gap-4 mb-5">
-          <Field label='Medida bolsillo del pistón (")' testId="pocket-depth" value={pocket} onChange={setPocket} placeholder="0.129" />
-          <Field label='Medida del pistón (")' testId="primer-height" value={height} onChange={setHeight} placeholder="0.124" />
+          <Field label='Medida bolsillo del pistón (")' testId="pocket-depth" value={pocket} onChange={(v) => { setPocket(v); persist({ pocket: v }); }} placeholder="0.129" />
+          <Field label='Medida del pistón (")' testId="primer-height" value={height} onChange={(v) => { setHeight(v); persist({ height: v }); }} placeholder="0.124" />
           <div>
             <label className="fc-label">Nº de grupos</label>
             <input className="fc-input" style={{ width: 110 }} data-testid="primer-groups" type="number" min="2" max="12" value={groupCount} onChange={(e) => setGroupCount(e.target.value)} />
