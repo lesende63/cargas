@@ -5,7 +5,7 @@ import { FileText } from "lucide-react";
 const PHASE_PDFS = {
   1: "/help/fase1.pdf",
   2: "/help/fase2.pdf",
-  3: "",
+  3: "/help/fase3.pdf",
   4: "",
   5: "",
 };
