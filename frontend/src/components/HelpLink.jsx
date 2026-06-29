@@ -7,7 +7,7 @@ const PHASE_PDFS = {
   2: "/help/fase2.pdf",
   3: "/help/fase3.pdf",
   4: "/help/fase4.pdf",
-  5: "",
+  5: "/help/fase5.pdf",
 };
 
 export default function HelpLink({ phase }) {
