@@ -8,6 +8,7 @@ import Phase2 from "../phases/Phase2";
 import Phase3 from "../phases/Phase3";
 import Phase4 from "../phases/Phase4";
 import Phase5 from "../phases/Phase5";
+import HelpLink from "../components/HelpLink";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -200,6 +201,7 @@ export default function Home() {
         {project && (
           <>
             <PhaseNav phase={phase} setPhase={setPhase} />
+            <HelpLink phase={phase} />
             <div className="mt-6">
               {phase === 1 && <Phase1 project={project} saveData={saveData} updateMeta={updateMeta} presets={presets} />}
               {phase === 2 && <Phase2 project={project} saveData={saveData} />}
