@@ -166,7 +166,7 @@ export default function Home() {
           <button className="fc-btn-outline flex items-center gap-2 px-4 py-2" data-testid="close-app-btn" onClick={closeApp} title="Cerrar aplicación">
             <Power size={16} /> <span className="hidden sm:inline">Cerrar</span>
           </button>
-          <img src="/icon-192.png" alt="F-Class Reload Lab" width="40" height="40" className="rounded-sm" data-testid="app-logo" />
+          <img src="/logo-mark.png?v=3" alt="Reload Lab" width="40" height="40" data-testid="app-logo" />
           <div>
             <h1 className="fc-title text-3xl sm:text-4xl font-black uppercase leading-none" data-testid="app-title">
               RELOAD LAB

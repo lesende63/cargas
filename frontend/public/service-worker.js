@@ -1,6 +1,6 @@
 // F-Class Reload Lab - service worker (app-shell cache, network-first for API)
-const CACHE = "fclass-reload-v2";
-const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+const CACHE = "fclass-reload-v3";
+const APP_SHELL = ["./", "./index.html", "./manifest.json", "./logo-mark.png", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
