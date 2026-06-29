@@ -1,0 +1,34 @@
+{
+  "summary": "Frontend-only verification of Phase5 'Volumen grupo mayor (gr)' (cart-vol) auto-pull bug fix from Phase1 volume groups. ALL bug fix assertions PASSED on the public URL. After computing volume groups in Fase 1 (5 cases producing Lote 1 with 3 vainas / 56.17 gr and Lote 2 with 2 vainas / 58.05 gr), Fase 5 cart-vol auto-populates with 56.17 (avg_volume of the largest-count group). 'Recoger medidas' keeps the value. Manual edit to 157.00 persists across reload.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "auth_gate": "PASS - '63-G1' unlocks app",
+    "project_create_308_VOL": "PASS - .308 Winchester / Lapua / VOL project created",
+    "phase1_volume_count_5": "PASS - volume-count set to 5",
+    "phase1_volume_groups_calc": "PASS - calc-volume-btn produced 2 groups: Lote1 (3 cases, avg 56.17 gr, spread 0.3), Lote2 (2 cases, avg 58.05 gr, spread 0.1)",
+    "phase5_cart_vol_auto_pull": "PASS - cart-vol auto-populated with 56.17 (largest group avg_volume) — bug fix confirmed (previously empty)",
+    "phase5_collect_btn_persists_vol": "PASS - clicking collect-cartridge-btn keeps cart-vol = 56.17",
+    "phase5_manual_edit_persist_reload": "PASS - cart-vol set to '157.00' persists after page reload + re-auth"
+  },
+  "note_on_value_magnitude": "Problem statement expected '~156.17' but cart-vol displays the computed volume (full - empty) which is 56.17 (= 156.x - 100). The user-provided test data uses empty=100 / full=156.x so volume = 56.x. The bug fix is verified correctly: cart-vol now reads d.volume.groups.groups[best].avg_volume.",
+  "test_report_links": ["/app/test_reports/iteration_9.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Phase5.jsx largestVolGroup() correctly handles both legacy shape (array) and new shape (object {groups, total_cases}) - backward compatible.",
+    "ProjectBar.jsx still emits a React hydration warning ('<span> cannot be a child of <option>') due to dev-tooling x-excluded wrapper; benign in dev, but if it survives production build, refactor option label to plain string.",
+    "Phase5.jsx cartVal() relies on auto-derived values only when cart[k] is empty/undefined; behavior matches spec for both locked and unlocked states."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "skipped", "frontend": "100%"},
+  "test_credentials": "ACCESS PASSWORD: 63-G1",
+  "seed_data_creation": "1 ephemeral project '.308 Winchester · Lapua · VOL' with 5 volume rows (empty=100, full=156.0/156.2/156.3/158.0/158.1).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Phase5 cart-vol auto-pull from Phase1 volume groups is fully verified. Volume group object shape produced by /api/volume-groups: {groups:[{group,count,avg_volume,spread,case_numbers,...}], total_cases}. Phase5.jsx now reads d.volume.groups.groups (nested). Persistence path (saveData debounce ~700ms -> backend) works across reload.",
+  "rca of the issue": "Bug: In Fase 5, the 'Volumen grupo mayor (gr)' field (cart-vol) was always empty because Phase5 used to read d.volume.groups expecting an array, while Phase1.calcVolume saves volume.groups as the API result object {groups:[...], total_cases}. Fix in Phase5.jsx largestVolGroup(): const vg = d.volume?.groups; const arr = Array.isArray(vg) ? vg : (vg && Array.isArray(vg.groups) ? vg.groups : []); then pick the entry with the highest .count and return its avg_volume. Verified end-to-end on public URL."
+}

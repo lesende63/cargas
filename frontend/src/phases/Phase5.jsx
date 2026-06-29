@@ -34,10 +34,11 @@ export default function Phase5({ project, saveData }) {
   };
   const lenUnit = d.case_length?.unit || "in";
   const largestVolGroup = () => {
-    const groups = d.volume?.groups || [];
-    if (!groups.length) return null;
+    const vg = d.volume?.groups;
+    const arr = Array.isArray(vg) ? vg : (vg && Array.isArray(vg.groups) ? vg.groups : []);
+    if (!arr.length) return null;
     let best = null;
-    groups.forEach((g) => { if (best == null || g.count > best.count) best = g; });
+    arr.forEach((g) => { if (best == null || g.count > best.count) best = g; });
     return best ? best.avg_volume : null;
   };
   const auto = {
