@@ -53,7 +53,7 @@ export default function Phase5({ project, saveData }) {
     { k: "c1", label: "C1 · Ø cuello con bala montada", src: "Fase 1" },
     { k: "d", label: "D · Arrastre de la punta", src: "Manual" },
     { k: "e", label: "E · Bolsillo del pistón", src: "Fase 4" },
-    { k: "f", label: "F · Headspace óptimo", src: "Fase 1" },
+    { k: "f", label: "F · HeadSpace", src: "Fase 1" },
   ];
 
   return (
