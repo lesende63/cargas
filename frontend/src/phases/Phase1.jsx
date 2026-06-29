@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Calculator, Ruler, Scale, Plus } from "lucide-react";
+import { Calculator, Ruler, Scale, Plus, X } from "lucide-react";
 import { api } from "../lib/api";
 import { inch, gr, num } from "../lib/format";
 import { Section, Field, ResultRow } from "../components/Bits";
@@ -89,6 +89,12 @@ export default function Phase1({ project, saveData, presets }) {
     saveData({ case_length: { lengths: next, unit: lenUnit } });
   };
   const trimLength = lengths.length ? Math.min(...lengths) : null;
+
+  const removeLength = (idx) => {
+    const next = lengths.filter((_, i) => i !== idx);
+    setLengths(next);
+    saveData({ case_length: { lengths: next, unit: lenUnit } });
+  };
 
   const changeLenUnit = (u) => {
     if (u === lenUnit) return;
@@ -181,7 +187,12 @@ export default function Phase1({ project, saveData, presets }) {
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
               {lengths.map((l, i) => (
-                <span key={i} className="font-mono-data text-sm px-2 py-1 rounded-sm" style={{ background: "#1A2E50", color: "#E2E8F0" }}>{fmtLen(l)}</span>
+                <span key={i} className="font-mono-data text-sm pl-2 pr-1 py-1 rounded-sm inline-flex items-center gap-1" style={{ background: "#1A2E50", color: "#E2E8F0" }} data-testid={`len-chip-${i}`}>
+                  {fmtLen(l)}
+                  <button type="button" data-testid={`len-remove-${i}`} onClick={() => removeLength(i)} title="Eliminar medida" className="ml-1 rounded-sm hover:bg-[rgba(248,113,113,0.2)]" style={{ color: "#F87171", lineHeight: 0, padding: 2 }}>
+                    <X size={14} />
+                  </button>
+                </span>
               ))}
             </div>
             <div className="max-w-md">
