@@ -1,5 +1,5 @@
 // F-Class Reload Lab - service worker (app-shell cache, network-first for API)
-const CACHE = "fclass-reload-v1";
+const CACHE = "fclass-reload-v2";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -17,7 +17,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
-  const url = new URL(request.url);
+
+  // Only handle same-origin http(s) requests. Never intercept blob:/data:/chrome-extension:
+  // schemes — intercepting blob: URLs breaks file downloads (JSON export) in installed PWAs.
+  let url;
+  try { url = new URL(request.url); } catch { return; }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return;
+  if (url.origin !== self.location.origin) return;
 
   // Never cache API calls — always go to network.
   if (url.pathname.startsWith("/api/")) return;

@@ -42,10 +42,10 @@ export default function Home() {
     const a = document.createElement("a");
     a.href = url;
     a.download = `f-class-proyectos-${new Date().toISOString().slice(0, 10)}.json`;
+    a.rel = "noopener";
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1500);
     toast.success(`${data.length} proyecto(s) exportado(s)`);
   };
 

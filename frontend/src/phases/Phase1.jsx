@@ -27,6 +27,7 @@ export default function Phase1({ project, saveData, presets }) {
   // --- Case length ---
   const [lengths, setLengths] = useState(d.case_length?.lengths || []);
   const [lenInput, setLenInput] = useState("");
+  const [lenUnit, setLenUnit] = useState(d.case_length?.unit || "in");
 
   // --- Volume ---
   const [caseCount, setCaseCount] = useState(d.volume?.count || 20);
@@ -45,6 +46,7 @@ export default function Phase1({ project, saveData, presets }) {
     setHs({ datum: nd.headspace?.datum ?? project.headspace_datum ?? "", fired_measurement: nd.headspace?.fired_measurement ?? "" });
     setHsRes(nd.headspace?.result || null);
     setLengths(nd.case_length?.lengths || []);
+    setLenUnit(nd.case_length?.unit || "in");
     setCaseCount(nd.volume?.count || 20);
     setRows(nd.volume?.rows || {});
     setVGroups(nd.volume?.groups || null);
@@ -83,9 +85,19 @@ export default function Phase1({ project, saveData, presets }) {
     const next = [...lengths, v];
     setLengths(next);
     setLenInput("");
-    saveData({ case_length: { lengths: next } });
+    saveData({ case_length: { lengths: next, unit: lenUnit } });
   };
   const trimLength = lengths.length ? Math.min(...lengths) : null;
+
+  const changeLenUnit = (u) => {
+    if (u === lenUnit) return;
+    const factor = u === "mm" ? 25.4 : 1 / 25.4;
+    const conv = lengths.map((l) => Math.round(Number(l) * factor * (u === "mm" ? 100 : 1000)) / (u === "mm" ? 100 : 1000));
+    setLenUnit(u);
+    setLengths(conv);
+    saveData({ case_length: { lengths: conv, unit: u } });
+  };
+  const fmtLen = (v) => (v == null ? "—" : (lenUnit === "mm" ? `${Number(v).toFixed(2)} mm` : `${Number(v).toFixed(3)}"`));
 
   const setRow = (n, field, val) => {
     const next = { ...rows, [n]: { ...(rows[n] || {}), [field]: val } };
@@ -152,8 +164,15 @@ export default function Phase1({ project, saveData, presets }) {
       {/* 3. CASE LENGTH */}
       <Section title="3 · Largo de vaina (recorte)" subtitle="Mide de culote a boca; la app indica la más corta para igualar todas." testId="caselength-section">
         <div className="flex flex-wrap items-end gap-3 mb-4">
+          <div>
+            <label className="fc-label">Unidad</label>
+            <select className="fc-input" style={{ width: 140 }} data-testid="len-unit" value={lenUnit} onChange={(e) => changeLenUnit(e.target.value)}>
+              <option value="in">Pulgadas (")</option>
+              <option value="mm">Milímetros (mm)</option>
+            </select>
+          </div>
           <div className="flex-1 min-w-[200px]">
-            <Field label='Medida de vaina (")' testId="len-input" value={lenInput} onChange={setLenInput} placeholder="2.005" />
+            <Field label={lenUnit === "mm" ? "Medida de vaina (mm)" : 'Medida de vaina (")'} testId="len-input" value={lenInput} onChange={setLenInput} placeholder={lenUnit === "mm" ? "50.93" : "2.005"} />
           </div>
           <button className="fc-btn flex items-center gap-2" data-testid="add-length-btn" onClick={addLength}><Plus size={16} /> Añadir</button>
         </div>
@@ -161,12 +180,12 @@ export default function Phase1({ project, saveData, presets }) {
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
               {lengths.map((l, i) => (
-                <span key={i} className="font-mono-data text-sm px-2 py-1 rounded-sm" style={{ background: "#1A2E50", color: "#E2E8F0" }}>{Number(l).toFixed(3)}"</span>
+                <span key={i} className="font-mono-data text-sm px-2 py-1 rounded-sm" style={{ background: "#1A2E50", color: "#E2E8F0" }}>{fmtLen(l)}</span>
               ))}
             </div>
             <div className="max-w-md">
               <ResultRow label="Vainas medidas" value={lengths.length} />
-              <ResultRow label="Recortar todas a (más corta)" value={inch(trimLength)} good />
+              <ResultRow label="Recortar todas a (más corta)" value={fmtLen(trimLength)} good />
             </div>
           </div>
         )}

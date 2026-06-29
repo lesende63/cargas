@@ -1,0 +1,37 @@
+{
+  "summary": "Frontend-only verification of the two fixes: (1) JSON export blob download under the PWA service-worker scope, and (2) Fase 1 case-length unit selector (in <-> mm) with conversion + persistence. All 4 review scenarios pass end-to-end against the live preview URL.",
+  "backend_issues": { "critical": [], "minor": [] },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "ProjectBar <select> options", "issues": ["Pre-existing hydration warning: x-source instrumentation injects a <span> inside <option>. Cosmetic, not introduced by this iteration; does not affect functionality."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Home.jsx exportProjects: anchor click on blob URL + delayed URL.revokeObjectURL(1500ms) is correct. Download triggers cleanly in a normal tab; service-worker.js v2 now early-returns on non-http(s) and cross-origin fetches, so blob: URLs are no longer intercepted (PWA-installed scenario fix). The normal tab path was verified (download captured, valid JSON, success toast).",
+    "Phase1.jsx changeLenUnit: factor = 25.4 for in->mm, 1/25.4 for mm->in; rounded to 2 decimals for mm, 3 decimals for inches. Confirmed 2.005\" -> 50.93 mm (matches 50.927 rounded to 2 dp). Persisted to localStorage via saveData({case_length:{lengths, unit}}).",
+    "Phase1.jsx fmtLen renders '50.93 mm' / '2.005\"' as expected. Field label switches to 'Medida de vaina (mm)' / 'Medida de vaina (\")' based on lenUnit.",
+    "importProjects in Home.jsx successfully re-imports the exported file: toast read 'Importado: 0 nuevo(s), 1 actualizado(s)' for the same project id (correct idempotent update path).",
+    "Suggestion (non-blocking): the global 'input' capture-phase listener in Home.jsx remains; harmless because text fields containing letters do not match the digit-only regex. No new issues introduced."
+  ],
+  "updated_files": [],
+  "success_rate": { "backend": "n/a (frontend-only)", "frontend": "100% (4/4 scenarios pass)" },
+  "test_credentials": "n/a - offline localStorage app, no auth.",
+  "seed_data_creation": "Created project '.308 Winchester / Lapua / EXP1' in the test browser's localStorage. No shared backend state affected.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "App URL=REACT_APP_BACKEND_URL. For the new-project flow, note that 'new-caliber' (data-testid) is a <select> element, so use select_option (by label or value), not fill. 'new-brand' and 'new-lot' are inputs. project-select also is <select>; due to x-source instrumentation each <option> contains a child <span> which causes Playwright to think the option element isn't strictly 'visible' on first try - resolved by reading select.options directly via page.evaluate and then select_option(value=...). Case-length section stores its unit under project.data.case_length.unit in localStorage; default is 'in'.",
+  "test_run_evidence": {
+    "project_creation": ".308 Winchester / Lapua / EXP1 created and selectable.",
+    "export_download": "Playwright captured download (filename: f-class-proyectos-2026-06-29.json). JSON parsed; entries=1, caliber='.308 Winchester', case_brand='Lapua', case_lot='EXP1'.",
+    "export_toast": "'1 proyecto(s) exportado(s)' visible in DOM. No PAGE_ERR. No console errors related to blob/service-worker.",
+    "import_toast": "'Importado: 0 nuevo(s), 1 actualizado(s)' visible after set_input_files on import-file-input.",
+    "case_length_default_unit": "len-unit value='in'; input label='MEDIDA DE VAINA (\")'; entered 2.005 -> chip and 'Recortar todas a (más corta)' both show '2.005\"'.",
+    "case_length_switch_to_mm": "Selecting Milímetros switches input label to 'MEDIDA DE VAINA (MM)'; previously stored 2.005\" auto-converts to '50.93 mm' chip; adding 50.50 in mm produces chips ['50.93 mm','50.50 mm']; shortest displayed as '50.50 mm'.",
+    "persistence_reload": "After full page reload + reselect, lenUnit='mm', chips ['50.93 mm','50.50 mm'] and 'Recortar todas a (más corta)'='50.50 mm' restored from localStorage."
+  },
+  "rca of the issue": "Not applicable - both fixes verified working as intended on the live preview. The export download triggers correctly with the blob URL pattern and the success toast appears; the unit selector converts and persists values as specified (25.4 factor)."
+}
