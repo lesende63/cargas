@@ -50,7 +50,7 @@ export default function Phase5({ project, saveData }) {
     vol: largestVolGroup(),
   };
   const cartVal = (k) => {
-    if (locked) return cart[k] !== undefined ? cart[k] : "";
+    if (locked) return (k in cart && cart[k] !== "") ? cart[k] : (auto[k] != null ? auto[k] : "");
     return cart[k] !== undefined && cart[k] !== "" ? cart[k] : (auto[k] != null ? auto[k] : "");
   };
   const setCartField = (k, val) => { const next = { ...cart, [k]: val }; setCart(next); setDirty(true); saveData({ cartridge: next }); };
