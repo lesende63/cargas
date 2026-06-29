@@ -33,6 +33,13 @@ export default function Phase5({ project, saveData }) {
     return cl.unit === "mm" ? Math.round(m * 100) / 100 : Math.round(m * 1000) / 1000;
   };
   const lenUnit = d.case_length?.unit || "in";
+  const largestVolGroup = () => {
+    const groups = d.volume?.groups || [];
+    if (!groups.length) return null;
+    let best = null;
+    groups.forEach((g) => { if (best == null || g.count > best.count) best = g; });
+    return best ? best.avg_volume : null;
+  };
   const auto = {
     a: seatingBest(),
     b: caseTrim(),
@@ -40,6 +47,7 @@ export default function Phase5({ project, saveData }) {
     c1: d.bushing?.result?.loaded_neck ?? null,
     e: num(d.primer?.pocket),
     f: d.headspace?.result?.optimal_headspace ?? null,
+    vol: largestVolGroup(),
   };
   const cartVal = (k) => {
     if (locked) return cart[k] !== undefined ? cart[k] : "";
@@ -48,7 +56,7 @@ export default function Phase5({ project, saveData }) {
   const setCartField = (k, val) => { const next = { ...cart, [k]: val }; setCart(next); setDirty(true); saveData({ cartridge: next }); };
   const collectFromPhases = () => {
     const next = { ...cart, _locked: false };
-    ["a", "b", "c", "c1", "e", "f"].forEach((k) => { if (auto[k] != null) next[k] = auto[k]; });
+    ["a", "b", "c", "c1", "e", "f", "vol"].forEach((k) => { if (auto[k] != null) next[k] = auto[k]; });
     setCart(next);
     setDirty(false);
     saveData({ cartridge: next });
@@ -56,7 +64,7 @@ export default function Phase5({ project, saveData }) {
   };
   const saveAll = () => {
     const next = { ...cart, _locked: true };
-    ["a", "b", "c", "c1", "d", "e", "f"].forEach((k) => { next[k] = cartVal(k); });
+    ["a", "b", "c", "c1", "d", "e", "f", "vol"].forEach((k) => { next[k] = cartVal(k); });
     setCart(next);
     setDirty(false);
     saveData({ cartridge: next });
@@ -70,6 +78,7 @@ export default function Phase5({ project, saveData }) {
     { k: "d", label: "D · Arrastre de la punta", src: "Manual" },
     { k: "e", label: "E · Bolsillo del pistón", src: "Fase 4" },
     { k: "f", label: "F · HeadSpace", src: "Fase 1" },
+    { k: "vol", label: "Volumen grupo mayor (gr)", src: "Fase 1 (volumen interno)" },
   ];
 
   return (
