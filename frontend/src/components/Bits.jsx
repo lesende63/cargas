@@ -12,7 +12,7 @@ export function Section({ title, subtitle, children, testId }) {
   );
 }
 
-export function Field({ label, value, onChange, placeholder, testId, type = "text" }) {
+export function Field({ label, value, onChange, onBlur, placeholder, testId, type = "text" }) {
   return (
     <div>
       <label className="fc-label">{label}</label>
@@ -23,6 +23,7 @@ export function Field({ label, value, onChange, placeholder, testId, type = "tex
         value={value ?? ""}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
       />
     </div>
   );

@@ -18,8 +18,9 @@ export default function Phase1({ project, saveData, presets }) {
   const [bushRes, setBushRes] = useState(d.bushing?.result || null);
 
   // --- Headspace ---
+  const fmt3 = (v) => { const n = Number(v); return v === "" || v == null || isNaN(n) ? "" : n.toFixed(3); };
   const [hs, setHs] = useState({
-    datum: d.headspace?.datum ?? project.headspace_datum ?? "",
+    datum: fmt3(d.headspace?.datum ?? project.headspace_datum ?? ""),
     fired_measurement: d.headspace?.fired_measurement ?? "",
   });
   const [hsRes, setHsRes] = useState(d.headspace?.result || null);
@@ -43,7 +44,7 @@ export default function Phase1({ project, saveData, presets }) {
       neck_tension: nd.bushing?.neck_tension ?? "0.002",
     });
     setBushRes(nd.bushing?.result || null);
-    setHs({ datum: nd.headspace?.datum ?? project.headspace_datum ?? "", fired_measurement: nd.headspace?.fired_measurement ?? "" });
+    setHs({ datum: fmt3(nd.headspace?.datum ?? project.headspace_datum ?? ""), fired_measurement: nd.headspace?.fired_measurement ?? "" });
     setHsRes(nd.headspace?.result || null);
     setLengths(nd.case_length?.lengths || []);
     setLenUnit(nd.case_length?.unit || "in");
@@ -147,7 +148,7 @@ export default function Phase1({ project, saveData, presets }) {
       {/* 2. HEADSPACE */}
       <Section title="2 · Headspace" subtitle="Medida óptima de casquillo para rifles de cerrojo (vaina disparada − 0.002&quot;)." testId="headspace-section">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-          <Field label='Datum del casquillo (")' testId="hs-datum" value={hs.datum} onChange={(v) => upHs("datum", v)} placeholder="0.400" />
+          <Field label='Datum del casquillo (")' testId="hs-datum" value={hs.datum} onChange={(v) => upHs("datum", v)} onBlur={(v) => upHs("datum", fmt3(v))} placeholder="0.400" />
           <Field label='Medida vaina disparada (")' testId="hs-fired" value={hs.fired_measurement} onChange={(v) => upHs("fired_measurement", v)} placeholder="1.630" />
           <div className="flex items-end">
             <button className="fc-btn w-full flex items-center justify-center gap-2" data-testid="calc-headspace-btn" onClick={calcHeadspace}><Ruler size={16} /> Calcular</button>
