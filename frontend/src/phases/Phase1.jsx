@@ -34,6 +34,7 @@ export default function Phase1({ project, saveData, presets }) {
   const [caseCount, setCaseCount] = useState(d.volume?.count || 20);
   const [rows, setRows] = useState(d.volume?.rows || {});
   const [vGroups, setVGroups] = useState(d.volume?.groups || null);
+  const [maxSpread, setMaxSpread] = useState(d.volume?.max_spread ?? 0.5);
 
   useEffect(() => {
     const nd = project.data || {};
@@ -51,6 +52,7 @@ export default function Phase1({ project, saveData, presets }) {
     setCaseCount(nd.volume?.count || 20);
     setRows(nd.volume?.rows || {});
     setVGroups(nd.volume?.groups || null);
+    setMaxSpread(nd.volume?.max_spread ?? 0.5);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
@@ -109,7 +111,7 @@ export default function Phase1({ project, saveData, presets }) {
   const setRow = (n, field, val) => {
     const next = { ...rows, [n]: { ...(rows[n] || {}), [field]: val } };
     setRows(next);
-    saveData({ volume: { count: caseCount, rows: next, groups: vGroups } });
+    saveData({ volume: { count: caseCount, rows: next, groups: vGroups, max_spread: maxSpread } });
   };
 
   const calcVolume = async () => {
@@ -118,9 +120,10 @@ export default function Phase1({ project, saveData, presets }) {
       const r = rows[i] || {};
       cases.push({ case_number: i, empty: num(r.empty), full: num(r.full) });
     }
-    const res = await api.volumeGroups({ cases, max_spread: 0.5 });
+    const spread = Math.max(0.01, Number(maxSpread) || 0.5);
+    const res = await api.volumeGroups({ cases, max_spread: spread });
     setVGroups(res);
-    saveData({ volume: { count: caseCount, rows, groups: res } });
+    saveData({ volume: { count: caseCount, rows, groups: res, max_spread: spread } });
     toast.success(`${res.groups.length} grupo(s) generados`);
   };
 
@@ -204,12 +207,17 @@ export default function Phase1({ project, saveData, presets }) {
       </Section>
 
       {/* 4. VOLUME */}
-      <Section title="4 · Volumen interno (lotes)" subtitle="Pesa vacía y llena; la app agrupa por volumen con diferencia máx. de 0.5 gr." testId="volume-section">
-        <div className="flex items-end gap-3 mb-4">
+      <Section title="4 · Volumen interno (lotes)" subtitle="Pesa vacía y llena; la app agrupa por volumen según el diferencial máximo que elijas." testId="volume-section">
+        <div className="flex items-end gap-3 mb-4 flex-wrap">
           <div>
             <label className="fc-label">Nº de vainas (máx 100)</label>
             <input className="fc-input" style={{ width: 120 }} data-testid="volume-count" type="number" min="1" max="100" value={caseCount}
-              onChange={(e) => { const c = Math.min(100, Math.max(1, Number(e.target.value) || 1)); setCaseCount(c); saveData({ volume: { count: c, rows, groups: vGroups } }); }} />
+              onChange={(e) => { const c = Math.min(100, Math.max(1, Number(e.target.value) || 1)); setCaseCount(c); saveData({ volume: { count: c, rows, groups: vGroups, max_spread: maxSpread } }); }} />
+          </div>
+          <div>
+            <label className="fc-label">Diferencial máx. (gr)</label>
+            <input className="fc-input" style={{ width: 120 }} data-testid="volume-spread" type="number" min="0.01" step="0.01" value={maxSpread}
+              onChange={(e) => { const s = e.target.value; setMaxSpread(s); saveData({ volume: { count: caseCount, rows, groups: vGroups, max_spread: s } }); }} />
           </div>
           <button className="fc-btn flex items-center gap-2" data-testid="calc-volume-btn" onClick={calcVolume}><Scale size={16} /> Calcular lotes</button>
         </div>
