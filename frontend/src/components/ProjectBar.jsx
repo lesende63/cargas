@@ -64,7 +64,7 @@ export default function ProjectBar({ projects, project, presets, onSelect, onCre
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-1 text-sm font-mono-data" data-testid="project-info">
           <span style={{ color: "#94A3B8" }}>Calibre: <b style={{ color: "#E2E8F0" }}>{project.caliber}</b></span>
           <span style={{ color: "#94A3B8" }}>Ø Bala: <b style={{ color: "#E2E8F0" }}>{project.bullet_diameter ?? "—"}"</b></span>
-          <span style={{ color: "#94A3B8" }}>Datum HS: <b style={{ color: "#E2E8F0" }}>{project.headspace_datum ?? "—"}"</b></span>
+          <span style={{ color: "#94A3B8" }}>Datum HS: <b style={{ color: "#E2E8F0" }}>{project.headspace_datum != null ? `${Number(project.headspace_datum).toFixed(3)}"` : "—"}</b></span>
         </div>
       )}
 
