@@ -51,9 +51,18 @@ export default function Home() {
   };
 
   const closeApp = () => {
-    window.open("", "_self");
-    window.close();
-    setTimeout(() => toast.message("Si la ventana no se cierra sola, ciérrala manualmente."), 400);
+    // Flush any pending (debounced) save before shutting down.
+    if (project && Object.keys(pendingPatch.current).length) {
+      const toSend = pendingPatch.current;
+      pendingPatch.current = {};
+      api.updateProject(project.id, { data: toSend });
+    }
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    // Try to close the tab/window (works for installed PWA / script-opened windows).
+    try { window.open("", "_self"); window.close(); } catch (e) {}
+    // If the browser blocked the close, fully reset: this unmounts the whole app
+    // (stops all timers/processes) and returns to the password gate.
+    setTimeout(() => { window.location.reload(); }, 300);
   };
 
   const importProjects = (e) => {    const file = e.target.files?.[0];
