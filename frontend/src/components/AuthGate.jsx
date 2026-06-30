@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
 
-const PASSWORD = "63-G1";
+const PASSWORD = "TPM10";
 
 export default function AuthGate({ children }) {
   const [authed, setAuthed] = useState(false);
