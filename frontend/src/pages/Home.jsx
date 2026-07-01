@@ -9,6 +9,7 @@ import Phase3 from "../phases/Phase3";
 import Phase4 from "../phases/Phase4";
 import Phase5 from "../phases/Phase5";
 import HelpLink from "../components/HelpLink";
+import Disclaimer from "../components/Disclaimer";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -196,6 +197,8 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      <Disclaimer />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <ProjectBar

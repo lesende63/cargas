@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Flame, ListOrdered, Sparkles, Target } from "lucide-react";
+import { Flame, ListOrdered, Sparkles, Target, AlertTriangle } from "lucide-react";
 import { api } from "../lib/api";
 import { gr, num } from "../lib/format";
 import { Section, Field, AtmoData } from "../components/Bits";
@@ -171,6 +171,11 @@ export default function Phase2({ project, saveData }) {
           <Field label="Diferencial (gr)" testId="ladder-step" value={step} onChange={(v) => { setStep(v); persist({ step: v }); }} placeholder="0.3" />
           <button className="fc-btn flex items-center gap-2" data-testid="gen-ladder-btn" onClick={genLadder}><ListOrdered size={16} /> Generar escalera</button>
         </div>
+
+        <p className="flex items-start gap-2 text-xs mb-5" style={{ color: "#F87171" }} data-testid="ladder-overpressure-warning">
+          <AlertTriangle size={14} style={{ marginTop: 2, flexShrink: 0 }} />
+          <span>Vigila los signos de sobrepresión en cada disparo (culote aplanado, cráter en el pistón, extracción dura, expulsión del pistón). <b>Bajo su responsabilidad.</b></span>
+        </p>
 
         {charges.length > 0 && (
           <div className="overflow-auto">
