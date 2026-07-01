@@ -20,7 +20,7 @@ export default function AuthGate({ children }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "#0A1526" }}>
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "transparent" }}>
       {denied && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" style={{ background: "rgba(10,21,38,0.85)" }} data-testid="auth-denied-modal">
           <div className="fc-card p-6 max-w-md w-full text-center" style={{ borderColor: "#F87171" }}>

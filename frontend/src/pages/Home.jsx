@@ -158,7 +158,7 @@ export default function Home() {
   }, [project]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#0A1526" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "transparent" }}>
       {decimalWarn && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4" style={{ background: "rgba(10,21,38,0.8)" }} data-testid="decimal-warning-modal">
           <div className="fc-card p-6 max-w-md w-full" style={{ borderColor: "#D4AF37" }}>

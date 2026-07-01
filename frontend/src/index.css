@@ -22,6 +22,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Faint full-screen background image (barely visible), fixed to cover the viewport.
+   Rendered via an inline-styled fixed div in App.js (see .app-bg) so the public
+   asset path is resolved by the browser at runtime, not bundled by webpack. */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.06;
+  z-index: 0;
+  pointer-events: none;
+}
+#root { position: relative; z-index: 1; }
+
 .font-head { font-family: 'Chivo', sans-serif; }
 .font-mono-data { font-family: 'JetBrains Mono', monospace; }
 

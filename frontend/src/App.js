@@ -7,6 +7,7 @@ import AuthGate from "./components/AuthGate";
 function App() {
   return (
     <div className="App">
+      <div className="app-bg" style={{ backgroundImage: "url('/bg-piston.jpg')" }} aria-hidden="true" />
       <Toaster position="top-right" richColors theme="dark" />
       <AuthGate>
         <BrowserRouter>
