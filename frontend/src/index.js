@@ -14,6 +14,17 @@ const queryClient = new QueryClient({
 });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Faint full-screen background image on the body (paints behind all content),
+// so it is only visible in empty background areas, not over zones/cards.
+// Set at runtime to avoid webpack trying to bundle the public asset URL.
+document.body.style.background =
+  "linear-gradient(rgba(10,21,38,0.94), rgba(10,21,38,0.94)), url('/bg-piston.jpg')";
+document.body.style.backgroundSize = "cover";
+document.body.style.backgroundPosition = "center";
+document.body.style.backgroundAttachment = "fixed";
+document.body.style.backgroundRepeat = "no-repeat";
+
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

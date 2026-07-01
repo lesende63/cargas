@@ -1,5 +1,5 @@
 // F-Class Reload Lab - service worker (offline-capable PWA)
-const CACHE = "fclass-reload-v11";
+const CACHE = "fclass-reload-v13";
 const APP_SHELL = [
   "./", "./index.html", "./manifest.json", "./logo-mark.png", "./icon-192.png", "./icon-512.png", "./bg-piston.jpg",
   "./help/fase1.pdf", "./help/fase2.pdf", "./help/fase3.pdf", "./help/fase4.pdf", "./help/fase5.pdf",
