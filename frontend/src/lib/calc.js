@@ -20,13 +20,12 @@ export function bushing({ neck_fired, neck_wall_thickness, bullet_diameter, neck
   const bushing_ideal = r3(loaded_neck - t);
   const bushing_recommended = r3(bushing_ideal - SPRING_BACK);
   const raw_expander = bushing_recommended + t / 2;
-  const raw_expander_3dp = r3(raw_expander);
-  const has_fourth_decimal = Math.abs(raw_expander - raw_expander_3dp) > 1e-9;
-  // Only when the result needs a 4th decimal do we snap to 0.0005 steps;
-  // otherwise it is simply the bushing plus half the desired tension.
-  const expander_recommended = has_fourth_decimal
+  // The desired tension has a 4th decimal (e.g. 0.0025) -> snap expander to 0.0005 steps.
+  // Otherwise the expander is simply the bushing plus half the desired tension.
+  const tension_has_fourth_decimal = Math.abs(t * 1000 - Math.round(t * 1000)) > 1e-9;
+  const expander_recommended = tension_has_fourth_decimal
     ? r4(Math.round(raw_expander / 0.0005) * 0.0005)
-    : raw_expander_3dp;
+    : r4(raw_expander);
   const estimated_tension = r4(expander_recommended - bushing_recommended);
   return { chamber_neck, loaded_neck, clearance, bushing_recommended, expander_recommended, estimated_tension, spring_back: SPRING_BACK };
 }
