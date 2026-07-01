@@ -19,8 +19,8 @@ export function bushing({ neck_fired, neck_wall_thickness, bullet_diameter, neck
   const clearance = r3(chamber_neck - loaded_neck);
   const bushing_ideal = r3(loaded_neck - t);
   const bushing_recommended = r3(bushing_ideal - SPRING_BACK);
-  const expander_recommended = r4(bushing_recommended - 2 * w);
-  const estimated_tension = r4(bd - expander_recommended);
+  const expander_recommended = r4(bushing_recommended + t);
+  const estimated_tension = r4(expander_recommended - bushing_recommended);
   return { chamber_neck, loaded_neck, clearance, bushing_recommended, expander_recommended, estimated_tension, spring_back: SPRING_BACK };
 }
 
