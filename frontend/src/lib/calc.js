@@ -3,6 +3,7 @@ const SPRING_BACK = 0.001;
 const HEADSPACE_REDUCTION = 0.002;
 
 const r3 = (x) => Math.round(x * 1000) / 1000;
+const r4 = (x) => Math.round(x * 10000) / 10000;
 const r2 = (x) => Math.round(x * 100) / 100;
 const r1 = (x) => Math.round(x * 10) / 10;
 const n = (v) => {
@@ -18,8 +19,8 @@ export function bushing({ neck_fired, neck_wall_thickness, bullet_diameter, neck
   const clearance = r3(chamber_neck - loaded_neck);
   const bushing_ideal = r3(loaded_neck - t);
   const bushing_recommended = r3(bushing_ideal - SPRING_BACK);
-  const expander_recommended = r3(bushing_recommended - 2 * w);
-  const estimated_tension = r3(bd - expander_recommended);
+  const expander_recommended = r4(bushing_recommended - 2 * w);
+  const estimated_tension = r4(bd - expander_recommended);
   return { chamber_neck, loaded_neck, clearance, bushing_recommended, expander_recommended, estimated_tension, spring_back: SPRING_BACK };
 }
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Calculator, Ruler, Scale, Plus, X } from "lucide-react";
 import { api } from "../lib/api";
-import { inch, gr, num } from "../lib/format";
+import { inch, inch4, gr, num } from "../lib/format";
 import { Section, Field, ResultRow } from "../components/Bits";
 
 export default function Phase1({ project, saveData, presets }) {
@@ -147,8 +147,8 @@ export default function Phase1({ project, saveData, presets }) {
             </div>
             <div>
               <ResultRow label="Bushing recomendado" value={inch(bushRes.bushing_recommended)} good />
-              <ResultRow label="Expander recomendado" value={inch(bushRes.expander_recommended)} good />
-              <ResultRow label="Tensión estimada resultante" value={inch(bushRes.estimated_tension)} good />
+              <ResultRow label="Expander recomendado" value={inch4(bushRes.expander_recommended)} good />
+              <ResultRow label="Tensión estimada resultante" value={inch4(bushRes.estimated_tension)} good />
             </div>
           </div>
         )}
