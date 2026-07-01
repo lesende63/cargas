@@ -33,15 +33,6 @@ export default function Disclaimer() {
     );
   }
 
-  // After acceptance: persistent, non-blocking notice always visible.
-  return (
-    <div className="border-b" style={{ background: "rgba(248,113,113,0.08)", borderColor: "rgba(248,113,113,0.3)" }} data-testid="disclaimer-banner">
-      <div className="max-w-6xl mx-auto px-6 py-2 flex items-start gap-2">
-        <AlertTriangle size={14} color="#F87171" style={{ marginTop: 3, flexShrink: 0 }} />
-        <p className="text-xs" style={{ color: "#FCA5A5", lineHeight: 1.5 }}>
-          <b>Descargo de responsabilidad:</b> {TEXT}
-        </p>
-      </div>
-    </div>
-  );
+  // After acceptance: no persistent notice (accepted once, stored in localStorage).
+  return null;
 }

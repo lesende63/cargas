@@ -172,7 +172,7 @@ export default function Phase2({ project, saveData }) {
           <button className="fc-btn flex items-center gap-2" data-testid="gen-ladder-btn" onClick={genLadder}><ListOrdered size={16} /> Generar escalera</button>
         </div>
 
-        <p className="flex items-start gap-2 text-xs mb-5" style={{ color: "#F87171" }} data-testid="ladder-overpressure-warning">
+        <p className="flex items-start gap-2 text-xs mb-5" style={{ color: "#D4AF37" }} data-testid="ladder-overpressure-warning">
           <AlertTriangle size={14} style={{ marginTop: 2, flexShrink: 0 }} />
           <span>Vigila los signos de sobrepresión en cada disparo (culote aplanado, cráter en el pistón, extracción dura, expulsión del pistón). <b>Bajo su responsabilidad.</b></span>
         </p>
